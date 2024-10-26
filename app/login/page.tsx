@@ -24,7 +24,7 @@ export default function LoginPage() {
       const email = formData.get('email') as string;
       const password = formData.get('password') as string;
 
-      const response = await fetch(`http://127.0.0.1:8080/api/v1/login`, {
+      const response = await fetch(`${apiUrl}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
