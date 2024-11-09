@@ -33,7 +33,6 @@
     "react-hooks/exhaustive-deps": "off",
     "jsx-a11y/click-events-have-key-events": "warn",
     "jsx-a11y/interactive-supports-focus": "warn",
-    "prettier/prettier": "warn",
     "no-unused-vars": "off",
     "unused-imports/no-unused-vars": "off",
     "unused-imports/no-unused-imports": "warn",
@@ -46,7 +45,7 @@
       }
     ],
     "import/order": [
-      "warn",
+      "off",
       {
         "groups": [
           "type",
@@ -79,13 +78,27 @@
       }
     ],
     "padding-line-between-statements": [
-      "warn",
-      {"blankLine": "always", "prev": "*", "next": "return"},
-      {"blankLine": "always", "prev": ["const", "let", "var"], "next": "*"},
+      "off",
+      { "blankLine": "always", "prev": "*", "next": "return" },
+      { "blankLine": "always", "prev": ["const", "let", "var"], "next": "*" },
       {
         "blankLine": "any",
         "prev": ["const", "let", "var"],
         "next": ["const", "let", "var"]
+      }
+    ],
+    "prettier/prettier": [
+      "warn",
+      {
+        "arrowParens": "always",
+        "semi": true,
+        "trailingComma": "none",
+        "tabWidth": 2,
+        "endOfLine": "auto",
+        "useTabs": false,
+        "singleQuote": true,
+        "printWidth": 80,
+        "jsxSingleQuote": true
       }
     ]
   }

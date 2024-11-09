@@ -17,14 +17,14 @@ export default function LoginPage() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
-    // toast.dismiss();
+    toast.dismiss();
 
     try {
       const formData = new FormData(event.currentTarget);
       const email = formData.get('email') as string;
       const password = formData.get('password') as string;
 
-      const response = await fetch(`${apiUrl}/login`, {
+      const response = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

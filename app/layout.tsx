@@ -1,6 +1,5 @@
 import '@/styles/globals.css';
 import { Metadata, Viewport } from 'next';
-import { Link } from '@nextui-org/link';
 import clsx from 'clsx';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -48,9 +47,7 @@ export default function RootLayout({
         <Providers themeProps={{ attribute: 'class', defaultTheme: 'dark' }}>
           <div className='relative flex flex-col h-screen'>
             <Navbar />
-            <main className='container mx-auto max-w-7xl px-6 flex-grow'>
-              {children}
-            </main>
+            <main className='mx-auto px-6 w-full'>{children}</main>
           </div>
           <ToastContainer
             position='bottom-right'
