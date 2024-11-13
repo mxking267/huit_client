@@ -9,26 +9,22 @@ import {
 
 import React from 'react';
 import { Tooltip } from '@nextui-org/tooltip';
-import UpdateCourse from './update-course';
-import DeleteCourse from './delete-course';
-import { Course } from '@/types/course';
+import UpdateLocation from './update-location';
+import DeleteLocation from './delete-location';
+import { Location } from '@/types/location';
 
 const columns = [
   {
-    key: 'courseId',
-    label: 'ID',
-  },
-  {
-    key: 'courseName',
+    key: 'name',
     label: 'NAME',
   },
   {
-    key: 'startYear',
-    label: 'START YEAR',
+    key: 'address',
+    label: 'ADDRESS',
   },
   {
-    key: 'endYear',
-    label: 'END YEAR',
+    key: 'capacity',
+    label: 'CAPACITY',
   },
   {
     key: 'actions',
@@ -37,13 +33,13 @@ const columns = [
 ];
 
 interface Props {
-  data: Course[];
+  data: Location[];
 }
 
-export default function CourseTable({ data }: Props) {
+export default function LocationTable({ data }: Props) {
   const renderCell = React.useCallback(
-    (course: Course, columnKey: React.Key) => {
-      const cellValue = course[columnKey as keyof Course];
+    (location: Location, columnKey: React.Key) => {
+      const cellValue = location[columnKey as keyof Location];
 
       switch (columnKey) {
         case 'createdAt':
@@ -51,17 +47,17 @@ export default function CourseTable({ data }: Props) {
         case 'actions':
           return (
             <div className='relative flex items-center gap-2'>
-              <Tooltip content='Edit course'>
+              <Tooltip content='Edit location'>
                 <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
-                  <UpdateCourse course={course} />
+                  <UpdateLocation location={location} />
                 </span>
               </Tooltip>
               <Tooltip
                 color='danger'
-                content='Delete course'
+                content='Delete location'
               >
                 <span className='text-lg text-danger cursor-pointer active:opacity-50'>
-                  <DeleteCourse courseId={course._id} />
+                  <DeleteLocation locationId={location._id} />
                 </span>
               </Tooltip>
             </div>

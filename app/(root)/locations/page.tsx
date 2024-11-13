@@ -1,56 +1,72 @@
 'use client';
 
-import { getAccessToken } from '@/components/utils/getAccessToken';
-import { Location } from '@/types/location';
-import { Card, CardBody, CardHeader } from '@nextui-org/card';
-import { useEffect, useState } from 'react';
-import { Divider } from '@nextui-org/divider';
+import fetchWithAuth from '@/components/hooks/fetchWithAuth';
+import CreateLocation from '@/components/location/create-location';
+import LocationTable from '@/components/location/table';
 import { title } from '@/components/primitives';
+import Search from '@/components/search';
+import { Location } from '@/types/location';
+import { Page } from '@/types/page';
+import { Pagination } from '@nextui-org/pagination';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+export default function LocationPage() {
+  const [data, setData] = useState<Array<Location>>([]);
+  const params = useParams();
+  const router = useRouter();
 
-export default function App() {
-  const [data, setData] = useState<Location[]>([]);
+  // Khởi tạo `page` từ URL params, mặc định là 1 nếu không có
+  const currentPage = Number(params.page) || 1;
+  const [pages, setPages] = useState<Page>({
+    currentPage,
+    totalPages: 1,
+  });
+
+  const fetchData = async (page: number, searchQuery: string = '') => {
+    try {
+      const data = await fetchWithAuth(
+        `location?page=${page}&keyword=${searchQuery}`
+      );
+      setData(data.data);
+      setPages({
+        currentPage: data.currentPage,
+        totalPages: data.totalPages,
+      });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(`${apiUrl}/location`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      });
-      const result = await res.json();
-      setData(result);
-    };
+    fetchData(currentPage);
+  }, [currentPage]);
 
-    fetchData();
-  }, []);
+  const handlePageChange = (page: number) => {
+    router.push(`/locations?page=${page}`);
+    fetchData(page);
+  };
 
+  const handleSearch = (query: string) => {
+    router.push(`/locations?page=1&search=${query}`); // Điều hướng đến trang 1 với kết quả tìm kiếm
+    fetchData(1, query);
+  };
   return (
-    <div className='flex flex-col w-full gap-4'>
+    <div className='flex flex-col gap-4 w-full'>
       <h1 className={title()}>Locations</h1>
-      {data.map((location) => (
-        <Card
-          key={location._id}
-          className='w-full'
-        >
-          <CardHeader className='flex gap-3'>
-            <p className='text-md'>{location.name}</p>
-          </CardHeader>
-          <Divider />
-          <CardBody className='flex flex-row gap-4 w-full'>
-            <small className='text-default-500 item-center'>
-              Address:{' '}
-              <span className='text-foreground'>{location.address}</span>
-              <span className='px-2'>-</span>
-              Capacity:{' '}
-              <span className='text-foreground'>{location.capacity}</span>
-            </small>
-          </CardBody>
-        </Card>
-      ))}
+      <div className='flex justify-between gap-4'>
+        <Search onSearch={handleSearch} />
+        <CreateLocation />
+      </div>
+      <div>
+        <LocationTable data={data} />
+      </div>
+      <Pagination
+        total={pages.totalPages}
+        initialPage={1}
+        page={pages.currentPage}
+        onChange={handlePageChange}
+      />
     </div>
   );
 }
