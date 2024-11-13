@@ -54,6 +54,7 @@ export default function RootLayout({
             draggable
           />
         </Providers>
+        {/* <script src='html5-qrcode.min.js'></script> */}
       </body>
     </html>
   );

@@ -50,7 +50,7 @@ const CreateEvent = () => {
 
   useEffect(() => {
     fetchData('location', setLocationData);
-    fetchData('user', setUserData);
+    fetchData('user/manager', setUserData);
   }, [fetchData]);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -90,8 +90,8 @@ const CreateEvent = () => {
     data: any[],
     valueKey: string,
     labelKey: string
-  ) =>
-    data.map((item) => (
+  ) => {
+    return data.map((item) => (
       <SelectItem
         value={item[valueKey]}
         key={item[valueKey]}
@@ -99,21 +99,22 @@ const CreateEvent = () => {
         {item[labelKey]}
       </SelectItem>
     ));
+  };
 
   return (
     <>
       <Button
-        color='primary'
         className='w-min self-end'
+        color='primary'
         onPress={onOpen}
       >
         Create
       </Button>
       <Modal
+        isKeyboardDismissDisabled
+        isDismissable={false}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        isDismissable={false}
-        isKeyboardDismissDisabled
       >
         <form
           className='space-y-4'
@@ -141,14 +142,12 @@ const CreateEvent = () => {
                   <Select
                     label='Select location'
                     name='location_id'
-                    className='max-w-xs'
                   >
                     {renderSelectOptions(locationData, '_id', 'name')}
                   </Select>
                   <Select
                     label='Select manager'
                     name='manager_id'
-                    className='max-w-xs'
                   >
                     {renderSelectOptions(userData, '_id', 'full_name')}
                   </Select>

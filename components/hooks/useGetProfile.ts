@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getAccessToken } from '@/components/utils/getAccessToken';
 import { User } from '@/types/user';
+import fetchWithAuth from './fetchWithAuth';
 
 const useGetMe = () => {
   const [user, setUser] = useState<User>();
@@ -10,28 +10,8 @@ const useGetMe = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = getAccessToken();
+        const data = await fetchWithAuth('auth/profile');
 
-        if (!token) {
-          throw new Error('No token found');
-        }
-
-        const response = await fetch(
-          `http://127.0.0.1:8080/api/v1/auth/profile`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-
-        const data = await response.json();
         setUser(data.user);
       } catch (error) {
         if (error instanceof Error) {

@@ -6,9 +6,15 @@ import {
 } from '@nextui-org/dropdown';
 import { User } from '@nextui-org/user';
 import useGetMe from './hooks/useGetProfile';
+import { useRouter } from 'next/navigation';
 
 export default function UserAction() {
+  const router = useRouter();
   const { user } = useGetMe();
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    router.push('/login');
+  };
   return (
     <Dropdown placement='bottom-start'>
       <DropdownTrigger>
@@ -34,15 +40,10 @@ export default function UserAction() {
           <p className='font-bold'>Signed in as</p>
           <p className='font-bold'>@{user?.email}</p>
         </DropdownItem>
-        <DropdownItem key='settings'>My Settings</DropdownItem>
-        <DropdownItem key='team_settings'>Team Settings</DropdownItem>
-        <DropdownItem key='analytics'>Analytics</DropdownItem>
-        <DropdownItem key='system'>System</DropdownItem>
-        <DropdownItem key='configurations'>Configurations</DropdownItem>
-        <DropdownItem key='help_and_feedback'>Help & Feedback</DropdownItem>
         <DropdownItem
           key='logout'
           color='danger'
+          onClick={handleLogout}
         >
           Log Out
         </DropdownItem>

@@ -2,8 +2,10 @@
 
 import { getAccessToken } from '@/components/utils/getAccessToken';
 import { Location } from '@/types/location';
-import { Card, CardHeader } from '@nextui-org/card';
+import { Card, CardBody, CardHeader } from '@nextui-org/card';
 import { useEffect, useState } from 'react';
+import { Divider } from '@nextui-org/divider';
+import { title } from '@/components/primitives';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -12,7 +14,7 @@ export default function App() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(`${apiUrl}/admin/locations`, {
+      const res = await fetch(`${apiUrl}/location`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -27,21 +29,26 @@ export default function App() {
   }, []);
 
   return (
-    <div className='flex flex-col w-full'>
+    <div className='flex flex-col w-full gap-4'>
+      <h1 className={title()}>Locations</h1>
       {data.map((location) => (
         <Card
           key={location._id}
           className='w-full'
         >
           <CardHeader className='flex gap-3'>
-            <div className='flex flex-col'>
-              <p className='text-md'>{location.name}</p>
-              <p>{location.address}</p>
-              <small className='text-default-500'>
-                Capacity: {location.capacity}
-              </small>{' '}
-            </div>
+            <p className='text-md'>{location.name}</p>
           </CardHeader>
+          <Divider />
+          <CardBody className='flex flex-row gap-4 w-full'>
+            <small className='text-default-500 item-center'>
+              Address:{' '}
+              <span className='text-foreground'>{location.address}</span>
+              <span className='px-2'>-</span>
+              Capacity:{' '}
+              <span className='text-foreground'>{location.capacity}</span>
+            </small>
+          </CardBody>
         </Card>
       ))}
     </div>

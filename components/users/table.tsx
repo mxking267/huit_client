@@ -39,8 +39,7 @@ const columns = [
 export default function UserTable() {
   const [data, setData] = useState<Array<User>>([]);
   const [pages, setPages] = useState<Page>();
-  //   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const apiUrl = 'http://127.0.0.1:8080/api/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   useEffect(() => {
     const fetchData = async () => {
       try {

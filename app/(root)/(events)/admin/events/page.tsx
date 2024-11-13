@@ -17,7 +17,7 @@ export default function EventPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${apiUrl}/events`, {
+        const res = await fetch(`${apiUrl}/event`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -66,6 +66,7 @@ export default function EventPage() {
               removeWrapper
               alt='Relaxing app background'
               className='z-0 w-full h-full object-cover'
+              fallbackSrc='https://via.placeholder.com/300x200'
               src='https://nextui.org/images/card-example-5.jpeg'
             />
             <CardFooter className='absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100'>
@@ -83,7 +84,7 @@ export default function EventPage() {
                 </div>
               </div>
               <Button
-                href={`/events/detail/${event._id}`}
+                href={`/admin/events/detail/${event._id}`}
                 as={Link}
                 color='primary'
                 showAnchorIcon

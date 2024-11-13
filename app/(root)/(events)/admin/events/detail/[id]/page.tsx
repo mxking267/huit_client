@@ -34,25 +34,24 @@ export default function EventDetailPage() {
   if (!data) return <div>Error</div>;
 
   return (
-    <div className=''>
-      <Card className='py-4 w-full'>
-        <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
-          <p className='text-tiny uppercase font-bold'>{data.name}</p>
-          <small className='text-default-500'>
-            {new Date(data.date_start).toDateString()} -{' '}
-            {new Date(data.date_end).toDateString()}
-          </small>
-          <h6 className='font-bold text-large'>{data.description}</h6>
-        </CardHeader>
-        <CardBody className='overflow-visible py-2'>
-          <Image
-            alt='Card background'
-            className='object-cover rounded-xl'
-            src='https://nextui.org/images/hero-card-complete.jpeg'
-            width={270}
-          />
-        </CardBody>
-      </Card>
-    </div>
+    <Card className='py-4 w-full grid grid-cols-2'>
+      <CardHeader className='pb-0 pt-2 px-4 flex-col items-start '>
+        <h1 className='text-2xl uppercase font-bold'>{data.name}</h1>
+        <small className='text-default-500'>
+          {new Date(data.date_start).toDateString()} -{' '}
+          {new Date(data.date_end).toDateString()}
+        </small>
+        <p className=''>{data.description}</p>
+      </CardHeader>
+      <CardBody className='overflow-visible py-2'>
+        <Image
+          removeWrapper
+          alt='Card background'
+          className='object-cover rounded-xl w-auto'
+          src='https://nextui.org/images/hero-card-complete.jpeg'
+          width={270}
+        />
+      </CardBody>
+    </Card>
   );
 }

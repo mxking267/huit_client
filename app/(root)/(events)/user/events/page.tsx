@@ -14,12 +14,13 @@ export default function EventPage() {
   const [data, setData] = useState<Array<Event & { isRegistered: boolean }>>(
     []
   );
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  // const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = 'http://127.0.0.1:8080/api/v1';
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${apiUrl}/events`, {
+        const res = await fetch(`${apiUrl}/event`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -68,6 +69,7 @@ export default function EventPage() {
               className='z-0 w-full h-full object-cover'
               src='https://nextui.org/images/card-example-5.jpeg'
             />
+
             <CardFooter className='absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100'>
               <div className='flex flex-grow gap-2 items-center'>
                 <Chip
@@ -83,9 +85,9 @@ export default function EventPage() {
                 </div>
               </div>
               {event.isRegistered ? (
-                <RegisterEvent eventId={event._id} />
-              ) : (
                 <GetQR eventId={event._id} />
+              ) : (
+                <RegisterEvent eventId={event._id} />
               )}
             </CardFooter>
           </Card>

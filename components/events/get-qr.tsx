@@ -11,6 +11,8 @@ import {
   useDisclosure,
 } from '@nextui-org/modal';
 
+import QRScanner from './scan-qr';
+
 const GetQR = ({ eventId }: { eventId: string }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -72,6 +74,7 @@ const GetQR = ({ eventId }: { eventId: string }) => {
                     <p>Loading QR code...</p>
                   )}
                 </div>
+                <QRScanner />
               </ModalBody>
               <ModalFooter>
                 <Button
