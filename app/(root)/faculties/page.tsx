@@ -11,7 +11,7 @@ import { Pagination } from '@nextui-org/pagination';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function UserPage() {
+export default function FacultyPage() {
   const [data, setData] = useState<Array<Faculty>>([]);
   const params = useParams();
   const router = useRouter();
