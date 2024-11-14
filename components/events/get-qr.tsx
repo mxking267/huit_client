@@ -11,12 +11,14 @@ import {
   useDisclosure,
 } from '@nextui-org/modal';
 
-import QRScanner from './scan-qr';
 
 const GetQR = ({ eventId }: { eventId: string }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [qrCode, setQR] = useState<string>();
+  const [qrCode, setQR] = useState<{
+    qr_code_cki: string;
+    qr_code_cko: string;
+  }>();
   const handleGetQR = async () => {
     setIsLoading(true);
     toast.dismiss();
@@ -53,7 +55,7 @@ const GetQR = ({ eventId }: { eventId: string }) => {
         variant='solid'
         onClick={handleGetQR}
       >
-        Get QR
+        Lấy QR
       </Button>
       <Modal
         isOpen={isOpen}
@@ -66,15 +68,26 @@ const GetQR = ({ eventId }: { eventId: string }) => {
               <ModalBody>
                 <div>
                   {qrCode ? (
-                    <img
-                      src={qrCode}
-                      alt='QR Code'
-                    />
+                    <div className='grid grid-cols-2 gap-4'>
+                      <div>
+                        <h1>Check in</h1>
+                        <img
+                          src={qrCode.qr_code_cki}
+                          alt='QR Code checkin'
+                        />
+                      </div>
+                      <div>
+                        <h1>Check out</h1>
+                        <img
+                          src={qrCode.qr_code_cko}
+                          alt='QR Code checkout'
+                        />
+                      </div>
+                    </div>
                   ) : (
-                    <p>Loading QR code...</p>
+                    <p>Đang tải QR code...</p>
                   )}
                 </div>
-                <QRScanner />
               </ModalBody>
               <ModalFooter>
                 <Button
@@ -83,12 +96,6 @@ const GetQR = ({ eventId }: { eventId: string }) => {
                   onPress={onClose}
                 >
                   Close
-                </Button>
-                <Button
-                  color='primary'
-                  onPress={onClose}
-                >
-                  Action
                 </Button>
               </ModalFooter>
             </>

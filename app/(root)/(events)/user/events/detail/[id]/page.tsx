@@ -39,8 +39,7 @@ export default function EventDetailPage() {
         <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
           <p className='text-tiny uppercase font-bold'>{data.name}</p>
           <small className='text-default-500'>
-            {new Date(data.date_start).toDateString()} -{' '}
-            {new Date(data.date_end).toDateString()}
+            {new Date(data.date).toDateString()}
           </small>
           <h6 className='font-bold text-large'>{data.description}</h6>
         </CardHeader>

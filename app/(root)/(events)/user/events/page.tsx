@@ -1,6 +1,5 @@
 'use client';
 
-import { getAccessToken } from '@/components/utils/getAccessToken';
 import { Card, CardFooter, CardHeader } from '@nextui-org/card';
 import { useEffect, useState } from 'react';
 import { Image } from '@nextui-org/image';
@@ -9,43 +8,62 @@ import { Chip } from '@nextui-org/chip';
 import RegisterEvent from '@/components/events/register-event';
 import GetQR from '@/components/events/get-qr';
 import { format } from 'date-fns';
+import fetchWithAuth from '@/components/hooks/fetchWithAuth';
+import { Page } from '@/types/page';
+import { Pagination } from '@nextui-org/pagination';
+import { useParams, useRouter } from 'next/navigation';
+import Search from '@/components/search';
 
 export default function EventPage() {
+  const params = useParams();
+  const router = useRouter();
+
+  const currentPage = Number(params.page) || 1;
   const [data, setData] = useState<Array<Event & { isRegistered: boolean }>>(
     []
   );
-  // const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const apiUrl = 'http://127.0.0.1:8080/api/v1';
+  const [pages, setPages] = useState<Page>({
+    currentPage,
+    totalPages: 1,
+  });
+
+  const fetchData = async (page: number, searchQuery: string = '') => {
+    try {
+      const res = await fetchWithAuth(
+        `event?page=${page}&keyword=${searchQuery}`
+      );
+
+      setData(res.data);
+      setPages({
+        currentPage: res.currentPage,
+        totalPages: res.totalPages,
+      });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`${apiUrl}/event`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getAccessToken()}`,
-          },
-        });
+    fetchData(currentPage);
+  }, [currentPage]);
 
-        if (!res.ok) {
-          throw new Error('Failed to fetch events');
-        }
+  const handlePageChange = (page: number) => {
+    router.push(`/user/events?page=${page}`);
+    fetchData(page);
+  };
 
-        const result = await res.json();
-        setData(result);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
+  const handleSearch = (query: string) => {
+    router.push(`/user/events?page=1&search=${query}`); // Điều hướng đến trang 1 với kết quả tìm kiếm
+    fetchData(1, query);
+  };
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex justify-between'>
         <h1 className='text-xl font-bold'>Events</h1>
+      </div>
+
+      <div className='flex justify-between gap-4'>
+        <Search onSearch={handleSearch} />
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 w-full'>
@@ -55,13 +73,10 @@ export default function EventPage() {
             isFooterBlurred
             className='w-full h-[300px]'
           >
-            <CardHeader className='absolute z-10 top-1 flex-col items-start'>
+            <CardHeader className='absolute z-10 top-1 flex-col items-start text-left backdrop-blur bg-white/10 px-4 rounded-md top-0'>
               <h4 className='text-white/90 font-medium text-xl'>
                 {event.name}
               </h4>
-              <p className='text-tiny text-white/60 uppercase font-bold'>
-                {event.description}
-              </p>
             </CardHeader>
             <Image
               removeWrapper
@@ -80,7 +95,7 @@ export default function EventPage() {
                   {event.status && event.status.toUpperCase()}
                 </Chip>
                 <div className='flex flex-col'>
-                  <p className='text-tiny text-white/60'>{`${format(new Date(event.date_start).toDateString(), 'dd/MM/yyyy')} - ${format(new Date(event.date_end).toDateString(), 'dd/MM/yyyy')}`}</p>
+                  <p className='text-tiny text-white/60'>{`${format(event.date ? new Date(event.date).toDateString() : new Date(), 'dd/MM/yyyy')}`}</p>
                   <p className='text-tiny text-white/60'>{}</p>
                 </div>
               </div>
@@ -93,6 +108,13 @@ export default function EventPage() {
           </Card>
         ))}
       </div>
+
+      <Pagination
+        initialPage={1}
+        page={pages.currentPage}
+        total={pages.totalPages}
+        onChange={handlePageChange}
+      />
     </div>
   );
 }

@@ -15,7 +15,6 @@ import { FormEvent, useEffect, useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { Button } from '@nextui-org/button';
 import { Select, SelectItem } from '@nextui-org/select';
-import { User } from '@/types/user';
 import { getAccessToken } from '../utils/getAccessToken';
 import { Location } from '@/types/location';
 
@@ -23,7 +22,6 @@ const CreateEvent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [locationData, setLocationData] = useState<Location[]>([]);
-  const [userData, setUserData] = useState<User[]>([]);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchData = useCallback(
@@ -40,7 +38,7 @@ const CreateEvent = () => {
           },
         });
         const result = await res.json();
-        setter(result);
+        setter(result.data);
       } catch (error) {
         toast.error(`Failed to fetch ${endpoint}`);
       }
@@ -50,7 +48,6 @@ const CreateEvent = () => {
 
   useEffect(() => {
     fetchData('location', setLocationData);
-    fetchData('user/manager', setUserData);
   }, [fetchData]);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -62,7 +59,6 @@ const CreateEvent = () => {
     const payload = {
       name: formData.get('name'),
       description: formData.get('description'),
-      manager_id: formData.get('manager_id'),
       location_id: formData.get('location_id'),
     };
 
@@ -145,12 +141,7 @@ const CreateEvent = () => {
                   >
                     {renderSelectOptions(locationData, '_id', 'name')}
                   </Select>
-                  <Select
-                    label='Select manager'
-                    name='manager_id'
-                  >
-                    {renderSelectOptions(userData, '_id', 'full_name')}
-                  </Select>
+
                   <Textarea
                     label='Description'
                     name='description'
