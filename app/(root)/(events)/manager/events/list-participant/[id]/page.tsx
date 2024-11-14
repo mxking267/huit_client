@@ -7,6 +7,8 @@ import fetchWithAuth from '@/components/hooks/fetchWithAuth';
 import { title } from '@/components/primitives';
 import ParticipantTable from '@/components/events/table-list-attendance';
 import Search from '@/components/search';
+import { Button } from '@nextui-org/button';
+import { exportToExcel } from '@/components/utils/export-excel';
 
 export default function ListParticipantPage() {
   const [data, setData] = useState<EventParticipant[]>([]);
@@ -30,6 +32,10 @@ export default function ListParticipantPage() {
     fetchData(query);
   };
 
+  const handleExport = () => {
+    exportToExcel(data);
+  };
+
   if (!data) return <div>Error</div>;
 
   return (
@@ -37,6 +43,12 @@ export default function ListParticipantPage() {
       <h1 className={title()}>Danh sách người tham gia</h1>
       <div className='flex justify-between gap-4'>
         <Search onSearch={handleSearch} />
+        <Button
+          color='primary'
+          onClick={handleExport}
+        >
+          Xuất danh sách
+        </Button>
       </div>
       <div>
         <ParticipantTable data={data} />
