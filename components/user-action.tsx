@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Dropdown,
   DropdownTrigger,
@@ -7,12 +9,14 @@ import {
 import { User } from '@nextui-org/user';
 import useGetMe from './hooks/useGetProfile';
 import { useRouter } from 'next/navigation';
+import { useAuth } from './utils/auth';
 
 export default function UserAction() {
   const router = useRouter();
   const { user } = useGetMe();
+  const { logout } = useAuth();
   const handleLogout = () => {
-    localStorage.removeItem('access_token');
+    logout();
     router.push('/login');
   };
   return (
@@ -37,7 +41,7 @@ export default function UserAction() {
           key='profile'
           className='h-14 gap-2'
         >
-          <p className='font-bold'>Signed in as</p>
+          <p className='font-bold'>Đăng nhập với</p>
           <p className='font-bold'>@{user?.email}</p>
         </DropdownItem>
         <DropdownItem
@@ -45,7 +49,7 @@ export default function UserAction() {
           color='danger'
           onClick={handleLogout}
         >
-          Log Out
+          Đăng xuất
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

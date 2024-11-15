@@ -10,7 +10,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@nextui-org/modal';
-
+import DownloadImage from '../utils/save-image';
 
 const GetQR = ({ eventId }: { eventId: string }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -48,11 +48,11 @@ const GetQR = ({ eventId }: { eventId: string }) => {
   return (
     <>
       <Button
-        color='primary'
+        color='success'
         isLoading={isLoading}
         radius='full'
         size='sm'
-        variant='solid'
+        variant='bordered'
         onClick={handleGetQR}
       >
         Lấy QR
@@ -75,12 +75,20 @@ const GetQR = ({ eventId }: { eventId: string }) => {
                           src={qrCode.qr_code_cki}
                           alt='QR Code checkin'
                         />
+                        <DownloadImage
+                          url={qrCode.qr_code_cki}
+                          name='qr-check-in'
+                        />
                       </div>
                       <div>
                         <h1>Check out</h1>
                         <img
                           src={qrCode.qr_code_cko}
                           alt='QR Code checkout'
+                        />
+                        <DownloadImage
+                          url={qrCode.qr_code_cko}
+                          name='qr-check-out'
                         />
                       </div>
                     </div>

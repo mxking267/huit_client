@@ -38,7 +38,7 @@ const RegisterEvent = ({ eventId }: { eventId: string }) => {
       variant='solid'
       onClick={handleRegister}
     >
-      Register
+      Đăng ký
     </Button>
   );
 };

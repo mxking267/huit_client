@@ -5,13 +5,15 @@ import { Card, CardFooter, CardHeader } from '@nextui-org/card';
 import { useEffect, useState } from 'react';
 import { Image } from '@nextui-org/image';
 import { Button } from '@nextui-org/button';
-import { Event } from '@/types/event';
+import { Event, getEventStatusTrans } from '@/types/event';
 import { Chip } from '@nextui-org/chip';
 import { Link } from '@nextui-org/link';
 import EventManagerAction from '@/components/events/event-manager-action';
 import { format } from 'date-fns';
+import isAuth from '@/components/hoc/isAuth';
+import { ERole } from '@/types/user';
 
-export default function EventPage() {
+const EventPage = () => {
   const [data, setData] = useState<Event[]>([]);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -40,9 +42,9 @@ export default function EventPage() {
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex justify-between'>
-        <h1 className='text-xl font-bold'>Events</h1>
+        <h1 className='text-xl font-bold'>Sự kiện</h1>
         <Button
-          href={`/admin/events/create`}
+          href={`/manager/events/create`}
           as={Link}
           color='primary'
           variant='solid'
@@ -60,8 +62,8 @@ export default function EventPage() {
             isFooterBlurred
             className='w-full '
           >
-            <CardHeader className=' z-10 top-1 flex-col items-start h-[80px]'>
-              <h4 className='text-foreground font-medium text-xl text-left line-clamp-2'>
+            <CardHeader className='absolute z-10 flex-col items-start text-left backdrop-blur bg-white/10 px-4 rounded-md top-0'>
+              <h4 className='text-white/90 font-medium text-xl'>
                 {event.name}
               </h4>
             </CardHeader>
@@ -74,17 +76,17 @@ export default function EventPage() {
                 event.image || 'https://nextui.org/images/card-example-5.jpeg'
               }
             />
-            <CardFooter className=' bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100'>
+            <CardFooter className='absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100'>
               <div className='flex flex-grow gap-2 items-center'>
                 <Chip
-                  color='primary'
+                  color={getEventStatusTrans(event.status).color}
                   variant='dot'
-                  className='text-green-500'
+                  className='text-white'
                 >
-                  {event.status && event.status.toUpperCase()}
+                  {getEventStatusTrans(event.status).status}
                 </Chip>
                 <div className='flex flex-col'>
-                  <p className='text-tiny text-foreground'>
+                  <p className='text-tiny text-white'>
                     {format(
                       event.date
                         ? new Date(event.date).toDateString()
@@ -101,4 +103,6 @@ export default function EventPage() {
       </div>
     </div>
   );
-}
+};
+
+export default isAuth(EventPage, [ERole.ADMIN, ERole.MANAGER]);

@@ -13,10 +13,12 @@ import { now, getLocalTimeZone } from '@internationalized/date';
 import { Location } from '@/types/location';
 import { Select, SelectItem } from '@nextui-org/select';
 import { getAccessToken } from '@/components/utils/getAccessToken';
+import { Faculty } from '@/types/faculty';
 export default function CreateEventPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [image, setImage] = useState<File>();
   const [location, setLocation] = useState<Location[]>([]);
+  const [faculty, setFaculty] = useState<Faculty[]>([]);
   const [previewUrl, setPreviewUrl] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -26,8 +28,10 @@ export default function CreateEventPage() {
 
   const fetchData = async () => {
     try {
-      const res = await fetchWithAuth(`location`);
-      setLocation(res.data);
+      const resLocation = await fetchWithAuth(`location/all`);
+      setLocation(resLocation);
+      const resFaculty = await fetchWithAuth(`faculty/all`);
+      setFaculty(resFaculty);
     } catch (error) {
       toast.error(`Failed to fetch`);
     }
@@ -79,7 +83,7 @@ export default function CreateEventPage() {
       }
 
       toast.success('Create success');
-      router.push('/admin/events');
+      router.push('/manager/events');
     } catch (error: any) {
       console.log(error);
       toast.error(error.message);
@@ -123,6 +127,19 @@ export default function CreateEventPage() {
             name='location_id'
           >
             {location.map((item) => (
+              <SelectItem
+                value={item._id}
+                key={item._id}
+              >
+                {item.name}
+              </SelectItem>
+            ))}
+          </Select>
+          <Select
+            label='Select faculty'
+            name='faculty_id'
+          >
+            {faculty.map((item) => (
               <SelectItem
                 value={item._id}
                 key={item._id}

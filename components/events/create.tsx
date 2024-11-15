@@ -17,11 +17,13 @@ import { Button } from '@nextui-org/button';
 import { Select, SelectItem } from '@nextui-org/select';
 import { getAccessToken } from '../utils/getAccessToken';
 import { Location } from '@/types/location';
+import { Faculty } from '@/types/faculty';
 
 const CreateEvent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [locationData, setLocationData] = useState<Location[]>([]);
+  const [facultyData, setFacultyData] = useState<Faculty[]>([]);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchData = useCallback(
@@ -38,7 +40,7 @@ const CreateEvent = () => {
           },
         });
         const result = await res.json();
-        setter(result.data);
+        setter(result);
       } catch (error) {
         toast.error(`Failed to fetch ${endpoint}`);
       }
@@ -47,7 +49,8 @@ const CreateEvent = () => {
   );
 
   useEffect(() => {
-    fetchData('location', setLocationData);
+    fetchData('location/all', setLocationData);
+    fetchData('faculty/all', setFacultyData);
   }, [fetchData]);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -140,6 +143,13 @@ const CreateEvent = () => {
                     name='location_id'
                   >
                     {renderSelectOptions(locationData, '_id', 'name')}
+                  </Select>
+
+                  <Select
+                    label='Select faculty'
+                    name='faculty_id'
+                  >
+                    {renderSelectOptions(facultyData, '_id', 'name')}
                   </Select>
 
                   <Textarea

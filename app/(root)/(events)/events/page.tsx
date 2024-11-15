@@ -19,9 +19,7 @@ const EventsPage = () => {
 
       const { role } = user;
 
-      if (role === 'ADMIN') {
-        router.push('/admin/events');
-      } else if (role === 'MANAGER') {
+      if (role === 'ADMIN' || role === 'MANAGER') {
         router.push('/manager/events');
       } else if (role === 'USER') {
         router.push('/user/events');

@@ -1,11 +1,11 @@
 'use client';
 
-import { getAccessToken } from '@/components/utils/getAccessToken';
 import { Card, CardBody, CardHeader } from '@nextui-org/card';
 import { useEffect, useState } from 'react';
 import { Image } from '@nextui-org/image';
 import { Event } from '@/types/event';
 import { useParams } from 'next/navigation';
+import fetchWithAuth from '@/components/hooks/fetchWithAuth';
 
 export default function EventDetailPage() {
   const [data, setData] = useState<Event | null>(null);
@@ -14,18 +14,8 @@ export default function EventDetailPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(
-        `https://eventhuit.io.vn/api/v1/admin/events/detail/${id}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getAccessToken()}`,
-          },
-        }
-      );
-      const result = await res.json();
-      setData(result);
+      const res = await fetchWithAuth(`events/detail/${id}`);
+      setData(res);
     };
 
     if (id) fetchData();

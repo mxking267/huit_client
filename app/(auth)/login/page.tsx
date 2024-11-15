@@ -7,10 +7,12 @@ import { Button } from '@nextui-org/button';
 import { FormEvent, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/utils/auth';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -38,7 +40,7 @@ export default function LoginPage() {
       }
       if (data.EC === 0) {
         toast.success('Login success');
-        localStorage.setItem('access_token', data.access_token);
+        login(data.access_token);
         router.push('/');
       } else {
         toast.error('Wrong email or password');
