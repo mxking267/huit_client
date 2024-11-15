@@ -1,7 +1,9 @@
 import { useCallback } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 export const useAuth = () => {
+  const [value, setValue] = useLocalStorage('access_token');
   // Hàm kiểm tra token có hết hạn không
   const isTokenExpired = useCallback((token: string): boolean => {
     try {
@@ -15,17 +17,17 @@ export const useAuth = () => {
 
   const login = (token: string) => {
     try {
-      localStorage.setItem('access_token', token);
+      setValue(token);
     } catch (error) {
       console.error('Invalid token', error);
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('access_token');
+    setValue('');
   };
 
-  const token = localStorage.getItem('access_token');
+  const token = value;
 
   if (token && !isTokenExpired(token)) {
     try {

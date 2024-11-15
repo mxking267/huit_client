@@ -14,7 +14,9 @@ import { Location } from '@/types/location';
 import { Select, SelectItem } from '@nextui-org/select';
 import { getAccessToken } from '@/components/utils/getAccessToken';
 import { Faculty } from '@/types/faculty';
+import { useLocalStorage } from '@/components/hooks/useLocalStorage';
 export default function CreateEventPage() {
+  const [value] = useLocalStorage('access_token');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [image, setImage] = useState<File>();
   const [location, setLocation] = useState<Location[]>([]);
@@ -23,6 +25,7 @@ export default function CreateEventPage() {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
+  console.log(value);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 

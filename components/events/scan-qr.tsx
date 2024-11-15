@@ -1,3 +1,5 @@
+'use client';
+
 import Html5QrcodePlugin from '@/config/Html5QrCodePlugin';
 import { toast } from 'react-toastify';
 import { getAccessToken } from '../utils/getAccessToken';

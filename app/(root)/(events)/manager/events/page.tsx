@@ -1,6 +1,5 @@
 'use client';
 
-import { getAccessToken } from '@/components/utils/getAccessToken';
 import { Card, CardFooter, CardHeader } from '@nextui-org/card';
 import { useEffect, useState } from 'react';
 import { Image } from '@nextui-org/image';
@@ -12,24 +11,17 @@ import EventManagerAction from '@/components/events/event-manager-action';
 import { format } from 'date-fns';
 import isAuth from '@/components/hoc/isAuth';
 import { ERole } from '@/types/user';
+import fetchWithAuth from '@/components/hooks/fetchWithAuth';
 
 const EventPage = () => {
   const [data, setData] = useState<Event[]>([]);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${apiUrl}/event`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getAccessToken()}`,
-          },
-        });
+        const res = await fetchWithAuth(`event`);
 
-        const result = await res.json();
-        setData(result.data);
+        setData(res.data);
       } catch (error) {
         console.error('Error fetching data:', error);
         // Xử lý thêm nếu cần, ví dụ: điều hướng đến trang đăng nhập hoặc hiển thị thông báo lỗi

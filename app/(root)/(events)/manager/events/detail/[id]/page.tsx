@@ -1,6 +1,5 @@
 'use client';
 
-import { getAccessToken } from '@/components/utils/getAccessToken';
 import { Card, CardBody, CardHeader } from '@nextui-org/card';
 import { useEffect, useState } from 'react';
 import { Image } from '@nextui-org/image';

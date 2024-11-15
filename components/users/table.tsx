@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Table,
   TableHeader,
@@ -39,7 +41,7 @@ const columns = [
 export default function UserTable() {
   const [data, setData] = useState<Array<User>>([]);
   const [pages, setPages] = useState<Page>();
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   useEffect(() => {
     const fetchData = async () => {
       try {
