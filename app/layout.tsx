@@ -8,6 +8,7 @@ import { Providers } from './providers';
 import { siteConfig } from '@/config/site';
 import { fontSans } from '@/config/fonts';
 import { Navbar } from '@/components/navbar';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export const metadata: Metadata = {
   title: {
@@ -54,7 +55,6 @@ export default function RootLayout({
             draggable
           />
         </Providers>
-        {/* <script src='html5-qrcode.min.js'></script> */}
       </body>
     </html>
   );

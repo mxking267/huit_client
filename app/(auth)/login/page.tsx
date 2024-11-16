@@ -4,53 +4,62 @@ import { Card, CardBody, CardHeader } from '@nextui-org/card';
 import { Image } from '@nextui-org/image';
 import { Input } from '@nextui-org/input';
 import { Button } from '@nextui-org/button';
-import { FormEvent, useState } from 'react';
+import { FormEvent } from 'react';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/utils/auth';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+const LoginPage = () => {
   const router = useRouter();
   const { login } = useAuth();
+  const queryClient = useQueryClient();
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  // Cập nhật giá trị apiUrl để tránh lỗi null/undefined
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setIsLoading(true);
-    toast.dismiss();
-
-    try {
-      const formData = new FormData(event.currentTarget);
-      const email = formData.get('email') as string;
-      const password = formData.get('password') as string;
-
+  const loginMutation = useMutation({
+    mutationFn: async (formData: { email: string; password: string }) => {
       const response = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(formData),
       });
-      const data = await response.json();
-      if (!data) {
-        toast.error('Server error');
-        return;
+
+      if (!response.ok) {
+        throw new Error('Invalid email or password');
       }
+      return response.json();
+    },
+    onSuccess: (data) => {
       if (data.EC === 0) {
         toast.success('Login success');
         login(data.access_token);
-        router.push('/');
+
+        // Invalidate 'users' tag
+        queryClient.invalidateQueries(['user-me']);
+
+        // Redirect to events page
+        router.push('/events');
       } else {
         toast.error('Wrong email or password');
       }
-    } catch (error: any) {
+    },
+    onError: (error: Error) => {
       toast.error(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+    },
+  });
+
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    loginMutation.mutate({ email, password });
+  };
 
   return (
     <div>
@@ -64,7 +73,7 @@ export default function LoginPage() {
           />
           <h4 className='font-bold text-large'>Login</h4>
         </CardHeader>
-        <CardBody className='overflow-visible py-2  min-w-[400px]'>
+        <CardBody className='overflow-visible py-2 min-w-[400px]'>
           <form
             className='space-y-4'
             onSubmit={onSubmit}
@@ -72,18 +81,18 @@ export default function LoginPage() {
             <Input
               label='Email'
               name='email'
-              variant={'flat'}
+              variant='flat'
             />
             <Input
               label='Password'
               name='password'
               type='password'
-              variant={'flat'}
+              variant='flat'
             />
             <Button
               className='w-full'
               color='primary'
-              isLoading={isLoading}
+              isLoading={loginMutation.isLoading}
               type='submit'
               variant='shadow'
             >
@@ -94,4 +103,6 @@ export default function LoginPage() {
       </Card>
     </div>
   );
-}
+};
+
+export default LoginPage;

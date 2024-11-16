@@ -16,14 +16,26 @@ import UserAction from './user-action';
 import { siteConfig } from './siteConfig';
 import useGetMe from './hooks/useGetProfile';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { ERole } from '@/types/user';
+
+type SideBarType = { href: string; label: string; roles: ERole[] };
 
 export const Navbar = () => {
   const { user, loading } = useGetMe();
+  const [items, setItems] = useState<SideBarType[]>([]);
   const router = useRouter();
   if (!user && !loading) router.push('/login');
   const filteredNavItems = user?.role
     ? siteConfig.navItems.filter((item) => item.roles.includes(user.role))
     : [];
+  useEffect(() => {
+    const filteredNavItems = user?.role
+      ? siteConfig.navItems.filter((item) => item.roles.includes(user.role))
+      : [];
+
+    setItems(filteredNavItems);
+  }, [user]);
 
   return (
     <div className='flex gap-4'>

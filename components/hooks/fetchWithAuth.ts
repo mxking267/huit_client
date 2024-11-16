@@ -1,4 +1,3 @@
-import { toast } from 'react-toastify';
 import { getAccessToken } from '../utils/getAccessToken';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -7,7 +6,6 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   const token = getAccessToken();
 
   if (!token) {
-    toast.error('Token not found');
     return null;
   }
 

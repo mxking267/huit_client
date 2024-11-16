@@ -1,33 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { User } from '@/types/user';
 import fetchWithAuth from './fetchWithAuth';
 
 const useGetMe = () => {
-  const [user, setUser] = useState<User>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
+  const fetchUser = async (): Promise<User> => {
+    const data = await fetchWithAuth('auth/profile');
+    return data.user;
+  };
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const data = await fetchWithAuth('auth/profile');
+  const {
+    data: user,
+    isLoading: loading,
+    isError,
+    error,
+  } = useQuery<User, Error>({
+    queryKey: ['user-me'],
+    queryFn: fetchUser,
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    retry: 2,
+  });
 
-        setUser(data.user);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError('An unknown error occurred');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  return { user, loading, error };
+  return {
+    user,
+    loading,
+    error: isError
+      ? error instanceof Error
+        ? error.message
+        : 'Unknown error'
+      : undefined,
+  };
 };
 
 export default useGetMe;

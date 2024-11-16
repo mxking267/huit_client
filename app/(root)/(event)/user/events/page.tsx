@@ -3,16 +3,17 @@
 import { Card, CardFooter, CardHeader } from '@nextui-org/card';
 import { useEffect, useState } from 'react';
 import { Image } from '@nextui-org/image';
-import { EEventStatus, Event, getEventStatusTrans } from '@/types/event';
+import { EEventStatus, Event } from '@/types/event';
 import { Chip } from '@nextui-org/chip';
 import RegisterEvent from '@/components/events/register-event';
-import GetQR from '@/components/events/get-qr';
 import { format } from 'date-fns';
 import fetchWithAuth from '@/components/hooks/fetchWithAuth';
 import { Page } from '@/types/page';
 import { Pagination } from '@nextui-org/pagination';
 import { useParams, useRouter } from 'next/navigation';
 import Search from '@/components/search';
+import { Link } from '@nextui-org/link';
+import { Button } from '@nextui-org/button';
 
 export default function EventPage() {
   const params = useParams();
@@ -90,21 +91,28 @@ export default function EventPage() {
 
               <CardFooter className='absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100'>
                 <div className='flex flex-grow gap-2 items-center'>
-                  <Chip
-                    color={getEventStatusTrans(event.status).color}
-                    variant='dot'
-                    className='text-white'
+                  <Button
+                    href={`/user/events/detail/${event._id}`}
+                    as={Link}
+                    color='primary'
+                    showAnchorIcon
+                    variant='solid'
                   >
-                    {getEventStatusTrans(event.status).status}
-                  </Chip>
+                    Xem chi tiết
+                  </Button>
                   <div className='flex flex-col'>
                     <p className='text-tiny text-white/60'>{`${format(event.date ? new Date(event.date).toDateString() : new Date(), 'dd/MM/yyyy')}`}</p>
-                    <p className='text-tiny text-white/60'>{}</p>
                   </div>
                 </div>
                 {canGetQR ? (
                   event.isRegistered ? (
-                    <GetQR eventId={event._id} />
+                    <Chip
+                      color={'success'}
+                      variant='bordered'
+                      className='text-green-500'
+                    >
+                      Đã đăng ký
+                    </Chip>
                   ) : (
                     <RegisterEvent eventId={event._id} />
                   )
