@@ -17,6 +17,7 @@ export type Event = {
   name: string;
   description: string;
   location_id: string;
+  faculty_id: string;
   date: string;
   participants: Participant[];
   manager_id: string;

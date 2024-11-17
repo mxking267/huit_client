@@ -10,10 +10,10 @@ const EventsPage = () => {
 
   useEffect(() => {
     const checkRole = async () => {
-      if (loading) return; // Nếu đang tải hoặc có lỗi thì không làm gì
+      if (loading) return;
 
       if (!user) {
-        router.push('/login'); // Nếu chưa đăng nhập, chuyển hướng tới trang đăng nhập
+        router.push('/login');
         return;
       }
 

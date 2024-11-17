@@ -101,7 +101,7 @@ export default function EventPage() {
                     Xem chi tiết
                   </Button>
                   <div className='flex flex-col'>
-                    <p className='text-tiny text-white/60'>{`${format(event.date ? new Date(event.date).toDateString() : new Date(), 'dd/MM/yyyy')}`}</p>
+                    <span className='text-tiny text-white/60'>{`${format(event.date ? new Date(event.date).toDateString() : new Date(), 'dd/MM/yyyy')}`}</span>
                   </div>
                 </div>
                 {canGetQR ? (

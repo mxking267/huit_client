@@ -1,7 +1,6 @@
 'use client';
 
 import { Card, CardFooter, CardHeader } from '@nextui-org/card';
-import { useEffect, useState } from 'react';
 import { Image } from '@nextui-org/image';
 import { Button } from '@nextui-org/button';
 import { Event, getEventStatusTrans } from '@/types/event';
@@ -11,25 +10,58 @@ import EventManagerAction from '@/components/events/event-manager-action';
 import { format } from 'date-fns';
 import isAuth from '@/components/hoc/isAuth';
 import { ERole } from '@/types/user';
+import { useQuery } from '@tanstack/react-query';
 import fetchWithAuth from '@/components/hooks/fetchWithAuth';
+import { useEffect, useState } from 'react';
+import { Page } from '@/types/page';
+import { useParams, useRouter } from 'next/navigation';
+import { Pagination } from '@nextui-org/pagination';
+
+type Response = { data: Event[] } & Page;
+
+const fetchEvents = async (page: number) => {
+  const response = await fetchWithAuth(`event?page=${page}`);
+  return response;
+};
 
 const EventPage = () => {
-  const [data, setData] = useState<Event[]>([]);
+  const params = useParams();
+  const router = useRouter();
+
+  const [currentPage, setCurrentPage] = useState(Number(params.page) || 1); // Initialize with params.page
+
+  const [pages, setPages] = useState<Page>({
+    currentPage,
+    totalPages: 1,
+  });
+
+  const { data, isLoading, isError, refetch } = useQuery<Response>({
+    queryKey: ['event-manager', currentPage],
+    queryFn: () => fetchEvents(currentPage),
+    keepPreviousData: true, // Giữ dữ liệu cũ khi đang fetch
+  });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetchWithAuth(`event`);
+    if (params.page) {
+      const page = Number(params.page);
+      setCurrentPage(page); // Update currentPage when params.page changes
+    }
+  }, [params.page]);
 
-        setData(res.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        // Xử lý thêm nếu cần, ví dụ: điều hướng đến trang đăng nhập hoặc hiển thị thông báo lỗi
-      }
-    };
+  useEffect(() => {
+    if (data) {
+      setPages({
+        currentPage: data.currentPage,
+        totalPages: data.totalPages,
+      });
+    }
+  }, [data]);
 
-    fetchData();
-  }, []);
+  // Hàm thay đổi trang và gọi lại API
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page); // Cập nhật currentPage
+    router.push(`/manager/events?page=${page}`); // Điều hướng đến trang mới
+  };
 
   return (
     <div className='flex flex-col gap-4'>
@@ -46,13 +78,12 @@ const EventPage = () => {
           Tạo mới
         </Button>
       </div>
-
       <div className='grid grid-cols-2 gap-4 p-4 w-full'>
-        {data.map((event) => (
+        {data?.data.map((event) => (
           <Card
             key={event._id}
             isFooterBlurred
-            className='w-full '
+            className='w-full'
           >
             <CardHeader className='absolute z-10 flex-col items-start text-left backdrop-blur bg-white/10 px-4 rounded-md top-0'>
               <h4 className='text-white/90 font-medium text-xl'>
@@ -81,8 +112,8 @@ const EventPage = () => {
                   <p className='text-tiny text-white'>
                     {format(
                       event.date
-                        ? new Date(event.date).toDateString()
-                        : new Date(),
+                        ? new Date(event.date)
+                        : new Date('1970-01-01'),
                       'dd/MM/yyyy'
                     )}
                   </p>
@@ -93,6 +124,13 @@ const EventPage = () => {
           </Card>
         ))}
       </div>
+
+      <Pagination
+        initialPage={currentPage}
+        page={pages.currentPage}
+        total={pages.totalPages}
+        onChange={handlePageChange}
+      />
     </div>
   );
 };

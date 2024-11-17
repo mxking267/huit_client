@@ -1,10 +1,10 @@
 'use client';
 
 import { Card, CardBody, CardFooter, CardHeader } from '@nextui-org/card';
-import { ChangeEvent, FormEvent, useRef, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 import { Image } from '@nextui-org/image';
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@nextui-org/button';
 import { Input, Textarea } from '@nextui-org/input';
 import { DatePicker } from '@nextui-org/date-picker';
@@ -12,22 +12,60 @@ import { now, getLocalTimeZone } from '@internationalized/date';
 import { Select, SelectItem } from '@nextui-org/select';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAccessToken } from '@/components/utils/getAccessToken';
-import fetchWithAuth from '@/components/hooks/fetchWithAuth';
 import { Location } from '@/types/location';
 import { Faculty } from '@/types/faculty';
+import { Event } from '@/types/event';
 
-const fetchLocationsAndFaculties = async () => {
-  const [locations, faculties] = await Promise.all([
-    fetchWithAuth(`location/all`),
-    fetchWithAuth(`faculty/all`),
-  ]);
-  return { locations, faculties };
+type FetchData = {
+  events: Event;
+  locations: Location[];
+  faculties: Faculty[];
 };
 
-const createEvent = async (formData: FormData) => {
+// Fetch helper function
+const fetchLocationsAndFaculties = async (
+  eventId: string
+): Promise<FetchData> => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const response = await fetch(`${apiUrl}/event/create`, {
-    method: 'POST',
+
+  const [events, locations, faculties] = await Promise.all([
+    fetch(`${apiUrl}/event/detail/${eventId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    }).then((res) => res.json()),
+
+    fetch(`${apiUrl}/location/all`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    }).then((res) => res.json()),
+
+    fetch(`${apiUrl}/faculty/all`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    }).then((res) => res.json()),
+  ]);
+
+  return { events, locations, faculties };
+};
+
+// Mutation helper function
+const updateEvent = async (params: {
+  formData: FormData;
+  id: string;
+}): Promise<Event> => {
+  const { formData, id } = params;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const response = await fetch(`${apiUrl}/event/edit/${id}`, {
+    method: 'PATCH',
     headers: {
       Authorization: `Bearer ${getAccessToken()}`,
     },
@@ -35,34 +73,40 @@ const createEvent = async (formData: FormData) => {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create event');
+    throw new Error('Failed to update event');
   }
 
   return response.json();
 };
 
-export default function CreateEventPage() {
-  const [image, setImage] = useState<File>();
+export default function UpdateEventPage() {
+  const params = useParams();
+  const id = params?.id as string;
+  const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data, isLoading: isFetching } = useQuery(
-    ['locations-faculties'],
-    fetchLocationsAndFaculties
+  const { data, isLoading: isFetching } = useQuery<FetchData>(
+    ['events-locations-faculties'],
+    () => fetchLocationsAndFaculties(id)
   );
 
-  const mutation = useMutation(createEvent, {
+  const mutation = useMutation(updateEvent, {
     onSuccess: () => {
-      toast.success('Event created successfully!');
+      toast.success('Event updated successfully!');
       queryClient.invalidateQueries(['event-manager']);
       router.push('/manager/events');
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to create event');
+      toast.error(error.message || 'Failed to update event');
     },
   });
+
+  useEffect(() => {
+    if (data) setPreviewUrl(events.image);
+  }, [data]);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -84,21 +128,24 @@ export default function CreateEventPage() {
     const date = formData.get('date') as string;
     const cleanedDateString = date.split('[')[0];
     const timestamp = new Date(cleanedDateString).getTime();
-    formData.append('date', timestamp.toString());
     formData.set('date', timestamp.toString());
 
     if (image) {
       formData.append('image', image);
     }
 
-    mutation.mutate(formData);
+    mutation.mutate({ formData, id });
   };
 
   if (isFetching) {
     return <p>Loading...</p>;
   }
 
-  const { locations = [], faculties = [] } = data || {};
+  const {
+    events,
+    locations = [],
+    faculties = [],
+  } = data || { events: {} as Event, locations: [], faculties: [] };
 
   return (
     <form
@@ -113,6 +160,7 @@ export default function CreateEventPage() {
             placeholder="Enter event's name"
             variant='flat'
             isRequired
+            defaultValue={events.name}
           />
 
           <div className='grid grid-cols-2 gap-2 w-full'>
@@ -130,14 +178,16 @@ export default function CreateEventPage() {
               variant='flat'
               type='number'
               isRequired
+              defaultValue={events.bonus_points?.toString()}
             />
           </div>
           <Select
             label='Select location'
             name='location_id'
             isRequired
+            value={events.location_id}
           >
-            {locations.map((item: Location) => (
+            {locations.map((item) => (
               <SelectItem
                 value={item._id}
                 key={item._id}
@@ -149,8 +199,9 @@ export default function CreateEventPage() {
           <Select
             label='Select faculty'
             name='faculty_id'
+            value={events.faculty_id}
           >
-            {faculties.map((item: Faculty) => (
+            {faculties.map((item) => (
               <SelectItem
                 value={item._id}
                 key={item._id}
@@ -163,6 +214,7 @@ export default function CreateEventPage() {
             label='Description'
             name='description'
             variant='flat'
+            defaultValue={events.description}
           />
         </CardHeader>
         <CardBody className='overflow-visible py-2'>

@@ -21,12 +21,12 @@ export default function EventManagerAction({ eventId }: Props) {
     {
       key: 'detail',
       label: 'Chi tiết',
-      link: '/admin/events/detail',
+      link: '/manager/events/detail',
     },
     {
       key: 'edit',
       label: 'Sửa',
-      link: '/admin/events/update',
+      link: '/manager/events/update',
     },
     {
       key: 'list',
