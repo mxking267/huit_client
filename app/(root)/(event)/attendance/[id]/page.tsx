@@ -14,7 +14,7 @@ export default function AttendancePage() {
       <div className='grid grid-cols-2 gap-4'>
         <QRScanner eventId={id} />
         <div>
-          <h6>Danh sách</h6>
+          <h6 className='mb-4'>Danh sách</h6>
           <ParticipantTable eventId={id} />
         </div>
       </div>

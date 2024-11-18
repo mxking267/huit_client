@@ -1,14 +1,18 @@
 import { useCallback } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 export const useAuth = () => {
+  const queryClient = useQueryClient();
   const [value, setValue] = useLocalStorage('access_token');
-  // Hàm kiểm tra token có hết hạn không
+  const router = useRouter();
+
   const isTokenExpired = useCallback((token: string): boolean => {
     try {
       const decoded: any = jwtDecode(token);
-      return decoded.exp * 1000 < Date.now(); // So sánh thời gian hết hạn với thời gian hiện tại
+      return decoded.exp * 1000 < Date.now();
     } catch (error) {
       console.error('Error decoding token', error);
       return true;
@@ -25,6 +29,8 @@ export const useAuth = () => {
 
   const logout = () => {
     setValue('');
+    queryClient.invalidateQueries(['user-me']);
+    router.push('/login');
   };
 
   const token = value;

@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardFooter, CardHeader } from '@nextui-org/card';
+import { Card, CardBody, CardFooter, CardHeader } from '@nextui-org/card';
 import { Image } from '@nextui-org/image';
 import { Button } from '@nextui-org/button';
 import { Event, getEventStatusTrans } from '@/types/event';
@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react';
 import { Page } from '@/types/page';
 import { useParams, useRouter } from 'next/navigation';
 import { Pagination } from '@nextui-org/pagination';
+import ChangeStatusEvent from '@/components/events/change-status';
 
 type Response = { data: Event[] } & Page;
 
@@ -78,49 +79,37 @@ const EventPage = () => {
           Tạo mới
         </Button>
       </div>
-      <div className='grid grid-cols-2 gap-4 p-4 w-full'>
+      <div className='grid grid-cols-4 gap-4 p-4 w-full'>
         {data?.data.map((event) => (
           <Card
             key={event._id}
-            isFooterBlurred
-            className='w-full'
+            className=''
           >
-            <CardHeader className='absolute z-10 flex-col items-start text-left backdrop-blur bg-white/10 px-4 rounded-md top-0'>
-              <h4 className='text-white/90 font-medium text-xl'>
-                {event.name}
-              </h4>
-            </CardHeader>
-            <Image
-              removeWrapper
-              alt='Relaxing app background'
-              className='z-0 w-full rounded-none object-cover h-[300px]'
-              fallbackSrc='https://via.placeholder.com/300x200'
-              src={
-                event.image || 'https://nextui.org/images/card-example-5.jpeg'
-              }
-            />
-            <CardFooter className='absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100'>
-              <div className='flex flex-grow gap-2 items-center'>
-                <Chip
-                  color={getEventStatusTrans(event.status).color}
-                  variant='dot'
-                  className='text-white'
-                >
-                  {getEventStatusTrans(event.status).status}
-                </Chip>
-                <div className='flex flex-col'>
-                  <p className='text-tiny text-white'>
-                    {format(
-                      event.date
-                        ? new Date(event.date)
-                        : new Date('1970-01-01'),
-                      'dd/MM/yyyy'
-                    )}
-                  </p>
-                </div>
+            <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
+              <div className='self-end'>
+                <EventManagerAction eventId={event._id} />
               </div>
-              <EventManagerAction eventId={event._id} />
-            </CardFooter>
+              <p className='uppercase font-bold text-left text-md'>
+                {event.name}
+              </p>
+                <small className='text-default-500'>
+                  {format(
+                    event.date ? new Date(event.date) : new Date('1970-01-01'),
+                    'dd/MM/yyyy'
+                  )}
+                </small>
+                <ChangeStatusEvent event={event} />
+            </CardHeader>
+            <CardBody className='overflow-visible py-2 items-end justify-end'>
+              <Image
+                removeWrapper
+                alt='Card background'
+                className='object-cover rounded-xl max-w-none w-full self-end'
+                src={
+                  event.image || 'https://nextui.org/images/card-example-5.jpeg'
+                }
+              />
+            </CardBody>
           </Card>
         ))}
       </div>

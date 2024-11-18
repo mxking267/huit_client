@@ -19,6 +19,7 @@ export const siteConfig = {
       roles: [ERole.MANAGER, ERole.ADMIN],
     },
     { href: '/users', label: 'Người dùng', roles: [ERole.ADMIN] },
+    { href: '/managers', label: 'Quản trị viên', roles: [ERole.ADMIN] },
     { href: '/locations', label: 'Địa điểm', roles: [ERole.ADMIN] },
     { href: '/courses', label: 'Khoá', roles: [ERole.ADMIN] },
     { href: '/faculties', label: 'Khoa', roles: [ERole.ADMIN] },

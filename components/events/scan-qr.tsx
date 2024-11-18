@@ -46,8 +46,9 @@ const QRScanner = ({ eventId }: Props) => {
     <Html5QrcodePlugin
       fps={10}
       qrbox={250}
-      disableFlip={false}
+      disableFlip={true}
       qrCodeSuccessCallback={onScanSuccess}
+      verbose={true}
     />
   );
 };

@@ -57,12 +57,10 @@ const Html5QrcodePlugin: React.FC<Html5QrcodePluginProps> = (props) => {
       config,
       verbose
     );
-    html5QrcodeScanner.render((decodedText, decodedResult) => {
-      props.qrCodeSuccessCallback(decodedText, decodedResult);
-      html5QrcodeScanner.clear().catch((error) => {
-        console.error('Failed to clear html5QrcodeScanner. ', error);
-      });
-    }, props.qrCodeErrorCallback);
+    html5QrcodeScanner.render(
+      props.qrCodeSuccessCallback,
+      props.qrCodeErrorCallback
+    );
 
     // cleanup function when component will unmount
     return () => {

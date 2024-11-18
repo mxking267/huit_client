@@ -8,6 +8,7 @@ import {
   TableRow,
   TableCell,
 } from '@nextui-org/table';
+
 import { User } from '@/types/user';
 
 import React from 'react';
@@ -16,20 +17,12 @@ import { EditIcon, EyeIcon, DeleteIcon } from '../icons';
 
 const columns = [
   {
-    key: 'student_code',
-    label: 'MSSV',
-  },
-  {
     key: 'full_name',
     label: 'Họ tên',
   },
   {
     key: 'email',
     label: 'Email',
-  },
-  {
-    key: 'class',
-    label: 'Lớp',
   },
   {
     key: 'actions',

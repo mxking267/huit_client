@@ -15,7 +15,7 @@ import { Logo } from '@/components/icons';
 import UserAction from './user-action';
 import { siteConfig } from './siteConfig';
 import useGetMe from './hooks/useGetProfile';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ERole } from '@/types/user';
 
@@ -25,17 +25,17 @@ export const Navbar = () => {
   const { user, loading } = useGetMe();
   const [items, setItems] = useState<SideBarType[]>([]);
   const router = useRouter();
+  const pathName = usePathname();
   if (!user && !loading) router.push('/login');
-  const filteredNavItems = user?.role
-    ? siteConfig.navItems.filter((item) => item.roles.includes(user.role))
-    : [];
+
   useEffect(() => {
-    const filteredNavItems = user?.role
-      ? siteConfig.navItems.filter((item) => item.roles.includes(user.role))
-      : [];
+    const filteredNavItems =
+      user?.role && pathName !== '/login'
+        ? siteConfig.navItems.filter((item) => item.roles.includes(user.role))
+        : [];
 
     setItems(filteredNavItems);
-  }, [user]);
+  }, [user, pathName]);
 
   return (
     <div className='flex gap-4'>
@@ -56,11 +56,11 @@ export const Navbar = () => {
               href='/'
             >
               <Logo />
-              <p className='font-bold text-inherit'>ACME</p>
+              <p className='font-bold text-inherit'>HUIT Event</p>
             </NextLink>
           </NavbarBrand>
-          <ul className='hidden lg:flex gap-4 justify-start ml-2'>
-            {filteredNavItems.map((item) => (
+          <ul className='flex gap-4 justify-start ml-2'>
+            {items.map((item) => (
               <NavbarItem key={item.href}>
                 <NextLink
                   href={item.href}

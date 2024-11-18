@@ -1,5 +1,5 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "cSpell.words": ["eventhuit", "toastify"],
+  "cSpell.words": ["eventhuit", "HUIT", "toastify"],
   "prettier.jsxSingleQuote": true
 }

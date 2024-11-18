@@ -39,10 +39,12 @@ export default function EventManagerAction({ eventId }: Props) {
     <Dropdown>
       <DropdownTrigger>
         <Button
-          variant='solid'
+          isIconOnly
+          variant='light'
           color='primary'
+          className='p-0'
         >
-          Open Menu
+          ...
         </Button>
       </DropdownTrigger>
       <DropdownMenu

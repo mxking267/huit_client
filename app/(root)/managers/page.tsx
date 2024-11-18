@@ -14,7 +14,6 @@ import fetchWithAuth from '@/components/hooks/fetchWithAuth';
 import { Page } from '@/types/page';
 import { useParams, useRouter } from 'next/navigation';
 import { User } from '@/types/user';
-import CreateUser from '@/components/users/create-user';
 
 export default function UserPage() {
   const [data, setData] = useState<Array<User>>([]);
@@ -31,7 +30,7 @@ export default function UserPage() {
   const fetchData = async (page: number, searchQuery: string = '') => {
     try {
       const data = await fetchWithAuth(
-        `user?page=${page}&keyword=${searchQuery}`
+        `user/manager/?page=${page}&keyword=${searchQuery}`
       );
       setData(data.data);
       setPages({
@@ -53,15 +52,15 @@ export default function UserPage() {
   };
 
   const handleSearch = (query: string) => {
-    router.push(`/users?page=1&search=${query}`); // Điều hướng đến trang 1 với kết quả tìm kiếm
+    router.push(`/managers?page=1&search=${query}`); // Điều hướng đến trang 1 với kết quả tìm kiếm
     fetchData(1, query);
   };
   return (
     <div className='flex flex-col gap-4'>
-      <h1 className={title({ className: 'mb-4' })}>Người dùng</h1>
+      <h1 className={title({ className: 'mb-4' })}>Quản trị viên</h1>
       <div className='flex justify-between gap-4'>
         <Search onSearch={handleSearch} />
-        <CreateUser />
+        {/* <CreateLocation /> */}
       </div>
       <ClientOnlyUserTable users={data} />
       <Pagination

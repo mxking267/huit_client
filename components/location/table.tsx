@@ -16,19 +16,19 @@ import { Location } from '@/types/location';
 const columns = [
   {
     key: 'name',
-    label: 'NAME',
+    label: 'Tên địa điểm',
   },
   {
     key: 'address',
-    label: 'ADDRESS',
+    label: 'Địa chỉ',
   },
   {
     key: 'capacity',
-    label: 'CAPACITY',
+    label: 'Sức chứa',
   },
   {
     key: 'actions',
-    label: 'ACTION',
+    label: 'Hành động',
   },
 ];
 
@@ -78,7 +78,7 @@ export default function LocationTable({ data }: Props) {
         {(item) => (
           <TableRow key={item._id}>
             {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
+              <TableCell className='truncate'>{renderCell(item, columnKey)}</TableCell>
             )}
           </TableRow>
         )}

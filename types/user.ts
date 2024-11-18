@@ -9,4 +9,6 @@ export type User = {
   full_name: string;
   email: string;
   role: ERole;
+  student_code: string;
+  class: string;
 };

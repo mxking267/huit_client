@@ -8,19 +8,14 @@ import {
 } from '@nextui-org/dropdown';
 import { User } from '@nextui-org/user';
 import useGetMe from './hooks/useGetProfile';
-import { useRouter } from 'next/navigation';
 import { useAuth } from './utils/auth';
-import { useQueryClient } from '@tanstack/react-query';
 
 export default function UserAction() {
-  const router = useRouter();
   const { user } = useGetMe();
   const { logout } = useAuth();
-  const queryClient = useQueryClient();
+
   const handleLogout = () => {
     logout();
-    queryClient.invalidateQueries(['user-me']);
-    router.push('/login');
   };
   return (
     <Dropdown placement='bottom-start'>

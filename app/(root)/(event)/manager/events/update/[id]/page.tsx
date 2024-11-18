@@ -8,13 +8,19 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@nextui-org/button';
 import { Input, Textarea } from '@nextui-org/input';
 import { DatePicker } from '@nextui-org/date-picker';
-import { now, getLocalTimeZone } from '@internationalized/date';
+import {
+  now,
+  getLocalTimeZone,
+  DateValue,
+  parseAbsoluteToLocal,
+} from '@internationalized/date';
 import { Select, SelectItem } from '@nextui-org/select';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAccessToken } from '@/components/utils/getAccessToken';
 import { Location } from '@/types/location';
 import { Faculty } from '@/types/faculty';
 import { Event } from '@/types/event';
+import { ZonedDateTime } from '@internationalized/date';
 
 type FetchData = {
   events: Event;
@@ -130,6 +136,13 @@ export default function UpdateEventPage() {
     const timestamp = new Date(cleanedDateString).getTime();
     formData.set('date', timestamp.toString());
 
+    // Loại bỏ các giá trị trống
+    for (const [key, value] of formData.entries()) {
+      if (!value || value === '') {
+        formData.delete(key); // Xóa các key có giá trị trống
+      }
+    }
+
     if (image) {
       formData.append('image', image);
     }
@@ -166,7 +179,7 @@ export default function UpdateEventPage() {
           <div className='grid grid-cols-2 gap-2 w-full'>
             <DatePicker
               hideTimeZone
-              defaultValue={now(getLocalTimeZone())}
+              defaultValue={parseAbsoluteToLocal(events.date)}
               label='Event Date'
               name='date'
               variant='flat'
@@ -185,7 +198,7 @@ export default function UpdateEventPage() {
             label='Select location'
             name='location_id'
             isRequired
-            value={events.location_id}
+            defaultSelectedKeys={[events.location_id]}
           >
             {locations.map((item) => (
               <SelectItem
@@ -199,7 +212,7 @@ export default function UpdateEventPage() {
           <Select
             label='Select faculty'
             name='faculty_id'
-            value={events.faculty_id}
+            defaultSelectedKeys={[events.faculty_id]}
           >
             {faculties.map((item) => (
               <SelectItem
@@ -248,7 +261,7 @@ export default function UpdateEventPage() {
             isLoading={mutation.isLoading}
             type='submit'
           >
-            Tạo
+            Lưu
           </Button>
         </CardFooter>
       </Card>

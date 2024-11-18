@@ -53,7 +53,7 @@ export default function LocationPage() {
   };
   return (
     <div className='flex flex-col gap-4 w-full'>
-      <h1 className={title()}>Locations</h1>
+      <h1 className={title()}>Địa điểm</h1>
       <div className='flex justify-between gap-4'>
         <Search onSearch={handleSearch} />
         <CreateLocation />

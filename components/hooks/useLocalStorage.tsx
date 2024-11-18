@@ -17,6 +17,10 @@ export const useLocalStorage = (
     return getStorageValue(key, defaultValue);
   });
   useEffect(() => {
+    if (!value) {
+      localStorage.removeItem(key);
+      return;
+    }
     // storing input name
     localStorage.setItem(key, value);
   }, [key, value]);

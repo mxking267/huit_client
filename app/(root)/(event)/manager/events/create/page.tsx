@@ -87,6 +87,13 @@ export default function CreateEventPage() {
     formData.append('date', timestamp.toString());
     formData.set('date', timestamp.toString());
 
+    // Loại bỏ các giá trị trống
+    for (const [key, value] of formData.entries()) {
+      if (!value || value === '') {
+        formData.delete(key); // Xóa các key có giá trị trống
+      }
+    }
+
     if (image) {
       formData.append('image', image);
     }

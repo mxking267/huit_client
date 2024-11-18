@@ -69,6 +69,7 @@ export type EventStatusTrans = {
 };
 
 export const getEventStatusTrans = (status: EEventStatus): EventStatusTrans => {
+  console.log(status);
   const uppercaseStatus = status.toUpperCase();
   if (uppercaseStatus === EEventStatus.INITIAL)
     return { status: 'Mới', color: 'primary' };
