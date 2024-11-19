@@ -1,57 +1,110 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { EventParticipant } from '@/types/event';
 import { useParams, useRouter } from 'next/navigation';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import fetchWithAuth from '@/components/hooks/fetchWithAuth';
 import { title } from '@/components/primitives';
 import ParticipantTable from '@/components/events/table-list-attendance';
 import Search from '@/components/search';
 import { Button } from '@nextui-org/button';
 import { exportToExcel } from '@/components/utils/export-excel';
+import AddStudentModal from '@/components/events/add-participant';
+import { useDisclosure } from '@nextui-org/modal';
+import { User } from '@/types/user';
+
+const fetchParticipants = async (id: string, searchQuery: string = '') => {
+  const res = await fetchWithAuth(
+    `/event/listParticipant/${id}?keyword=${searchQuery}`
+  );
+  return res;
+};
+
+const addParticipant = async (
+  id: string,
+  participant: Partial<EventParticipant>
+) => {
+  const res = await fetchWithAuth(`/event/addParticipant/${id}`, {
+    method: 'POST',
+    body: JSON.stringify(participant),
+  });
+  if (!res.ok) throw new Error('Failed to add participant');
+  return res.json();
+};
 
 export default function ListParticipantPage() {
-  const [data, setData] = useState<EventParticipant[]>([]);
+  const [isModalOpen, setModalOpen] = useState(false);
   const params = useParams();
-  const id = params?.id as string;
   const router = useRouter();
+  const id = params?.id as string;
+  const queryClient = useQueryClient();
 
-  const fetchData = async (searchQuery: string = '') => {
-    const res = await fetchWithAuth(
-      `/event/listParticipant/${id}?keyword=${searchQuery}`
-    );
-    setData(res);
-  };
+  const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    if (id) fetchData('');
-  }, [id]);
+  // Fetch participants
+  const { data, isLoading, isError, refetch } = useQuery<EventParticipant[]>(
+    ['participants', id, searchQuery],
+    () => fetchParticipants(id, searchQuery),
+    {
+      enabled: !!id, // Chỉ fetch nếu có id
+    }
+  );
+
+  // Add participant mutation
+  const { mutate: addNewParticipant } = useMutation(
+    (participant: Partial<EventParticipant>) => addParticipant(id, participant),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['participants', id]); // Refetch danh sách
+      },
+    }
+  );
 
   const handleSearch = (query: string) => {
+    setSearchQuery(query);
     router.push(`/manager/events/list-participant/${id}?search=${query}`);
-    fetchData(query);
+    refetch(); // Gọi lại query khi thay đổi
   };
 
   const handleExport = () => {
-    exportToExcel(data);
+    if (data) exportToExcel(data);
   };
 
-  if (!data) return <div>Error</div>;
+  const handleAddParticipant = (select: User) => {
+    addNewParticipant(select);
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error fetching data</div>;
 
   return (
     <div className='flex flex-col gap-4 w-full'>
       <h1 className={title()}>Danh sách người tham gia</h1>
       <div className='flex justify-between gap-4'>
         <Search onSearch={handleSearch} />
-        <Button
-          color='primary'
-          onClick={handleExport}
-        >
-          Xuất danh sách
-        </Button>
+        <div className='flex gap-2'>
+          <Button
+            color='primary'
+            onClick={handleExport}
+          >
+            Xuất danh sách
+          </Button>
+          <Button
+            color='success'
+            onPress={() => setModalOpen(true)}
+          >
+            Thêm người tham gia
+          </Button>
+          <AddStudentModal
+            isOpen={isModalOpen}
+            onAddToList={handleAddParticipant}
+            onClose={() => setModalOpen(false)}
+          />
+        </div>
       </div>
       <div>
-        <ParticipantTable data={data} />
+        <ParticipantTable data={data || []} />
       </div>
     </div>
   );
