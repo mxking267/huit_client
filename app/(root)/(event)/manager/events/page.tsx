@@ -17,18 +17,21 @@ import { Page } from '@/types/page';
 import { useParams, useRouter } from 'next/navigation';
 import { Pagination } from '@nextui-org/pagination';
 import ChangeStatusEvent from '@/components/events/change-status';
+import Search from '@/components/search';
 
 type Response = { data: Event[] } & Page;
 
-const fetchEvents = async (page: number) => {
-  const response = await fetchWithAuth(`event?page=${page}`);
+const fetchEvents = async (page: number, searchQuery: string = '') => {
+  const response = await fetchWithAuth(
+    `event?page=${page}&keyword=${searchQuery}`
+  );
   return response;
 };
 
 const EventPage = () => {
   const params = useParams();
   const router = useRouter();
-
+  const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(Number(params.page) || 1); // Initialize with params.page
 
   const [pages, setPages] = useState<Page>({
@@ -37,8 +40,8 @@ const EventPage = () => {
   });
 
   const { data, isLoading, isError, refetch } = useQuery<Response>({
-    queryKey: ['event-manager', currentPage],
-    queryFn: () => fetchEvents(currentPage),
+    queryKey: ['event-manager', currentPage, searchQuery],
+    queryFn: () => fetchEvents(currentPage, searchQuery),
     keepPreviousData: true, // Giữ dữ liệu cũ khi đang fetch
   });
 
@@ -46,6 +49,7 @@ const EventPage = () => {
     if (params.page) {
       const page = Number(params.page);
       setCurrentPage(page); // Update currentPage when params.page changes
+      refetch();
     }
   }, [params.page]);
 
@@ -64,20 +68,28 @@ const EventPage = () => {
     router.push(`/manager/events?page=${page}`); // Điều hướng đến trang mới
   };
 
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    router.push(`/manager/events?page=1&search=${query}`); // Điều hướng đến trang 1 với kết quả tìm kiếm
+  };
+
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex justify-between'>
         <h1 className='text-xl font-bold'>Sự kiện</h1>
-        <Button
-          href={`/manager/events/create`}
-          as={Link}
-          color='primary'
-          variant='solid'
-          radius='full'
-          size='md'
-        >
-          Tạo mới
-        </Button>
+        <div className='flex justify-between gap-4'>
+          <Search onSearch={handleSearch} />
+          <Button
+            href={`/manager/events/create`}
+            as={Link}
+            color='primary'
+            variant='solid'
+            radius='full'
+            size='md'
+          >
+            Tạo mới
+          </Button>
+        </div>
       </div>
       <div className='grid grid-cols-4 gap-4 p-4 w-full'>
         {data?.data.map((event) => (
@@ -92,13 +104,13 @@ const EventPage = () => {
               <p className='uppercase font-bold text-left text-md'>
                 {event.name}
               </p>
-                <small className='text-default-500'>
-                  {format(
-                    event.date ? new Date(event.date) : new Date('1970-01-01'),
-                    'dd/MM/yyyy'
-                  )}
-                </small>
-                <ChangeStatusEvent event={event} />
+              <small className='text-default-500'>
+                {format(
+                  event.date ? new Date(event.date) : new Date('1970-01-01'),
+                  'dd/MM/yyyy'
+                )}
+              </small>
+              <ChangeStatusEvent event={event} />
             </CardHeader>
             <CardBody className='overflow-visible py-2 items-end justify-end'>
               <Image

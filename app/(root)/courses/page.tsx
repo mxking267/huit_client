@@ -51,6 +51,9 @@ export default function CoursePage() {
     router.push(`/courses?page=1&search=${query}`); // Điều hướng đến trang 1 với kết quả tìm kiếm
     fetchData(1, query);
   };
+
+  if (!data) return <div>Loading...</div>;
+
   return (
     <div className='flex flex-col gap-4 w-full'>
       <h1 className={title()}>Course</h1>

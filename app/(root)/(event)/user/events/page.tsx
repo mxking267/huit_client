@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardFooter, CardHeader } from '@nextui-org/card';
+import { Card, CardBody, CardFooter, CardHeader } from '@nextui-org/card';
 import { useEffect, useState } from 'react';
 import { Image } from '@nextui-org/image';
 import { EEventStatus, Event } from '@/types/event';
@@ -75,21 +75,32 @@ export default function EventPage() {
             <Card
               key={event._id}
               isFooterBlurred
-              className='w-full h-[300px]'
+              className='w-full'
             >
-              <CardHeader className='absolute z-10 flex-col items-start text-left backdrop-blur bg-white/10 px-4 rounded-md top-0'>
-                <h4 className='text-white/90 font-medium text-xl'>
+              <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
+                <p className='uppercase font-bold text-left text-md'>
                   {event.name}
-                </h4>
+                </p>
+                <small className='text-default-500'>
+                  {format(
+                    event.date ? new Date(event.date) : new Date('1970-01-01'),
+                    'dd/MM/yyyy'
+                  )}
+                </small>
               </CardHeader>
-              <Image
-                removeWrapper
-                alt='Relaxing app background'
-                className='z-0 w-full h-full object-cover'
-                src='https://nextui.org/images/card-example-5.jpeg'
-              />
+              <CardBody className='overflow-visible py-2 items-end justify-end'>
+                <Image
+                  removeWrapper
+                  alt='Relaxing app background'
+                  className='object-cover rounded-xl max-w-none w-full self-end'
+                  src={
+                    event.image ||
+                    'https://nextui.org/images/card-example-5.jpeg'
+                  }
+                />
+              </CardBody>
 
-              <CardFooter className='absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100'>
+              <CardFooter className='bottom-0 z-10'>
                 <div className='flex flex-grow gap-2 items-center'>
                   <Button
                     href={`/user/events/detail/${event._id}`}
@@ -101,7 +112,12 @@ export default function EventPage() {
                     Xem chi tiết
                   </Button>
                   <div className='flex flex-col'>
-                    <span className='text-tiny text-white/60'>{`${format(event.date ? new Date(event.date).toDateString() : new Date(), 'dd/MM/yyyy')}`}</span>
+                    <span className='text-tiny text-white/60'>{`${format(
+                      event.date
+                        ? new Date(event.date).toDateString()
+                        : new Date(),
+                      'dd/MM/yyyy'
+                    )}`}</span>
                   </div>
                 </div>
                 {canGetQR ? (

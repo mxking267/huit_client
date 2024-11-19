@@ -52,12 +52,12 @@ export default function EventRegisteredPage() {
   }, [currentPage, user]);
 
   const handlePageChange = (page: number) => {
-    router.push(`/user/events?page=${page}`);
+    router.push(`/events-registered?page=${page}`);
     fetchData(page);
   };
 
   const handleSearch = (query: string) => {
-    router.push(`/user/events?page=1&search=${query}`);
+    router.push(`/events-registered?page=1&search=${query}`);
     fetchData(1, query);
   };
 
