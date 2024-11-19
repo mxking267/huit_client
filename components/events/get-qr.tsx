@@ -13,6 +13,7 @@ import {
   useDisclosure,
 } from '@nextui-org/modal';
 import DownloadImage from '../utils/save-image';
+import fetchWithAuth from '../hooks/fetchWithAuth';
 
 const GetQR = ({ eventId }: { eventId: string }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,18 +26,8 @@ const GetQR = ({ eventId }: { eventId: string }) => {
     setIsLoading(true);
     toast.dismiss();
     try {
-      const res = await fetch(
-        `http://127.0.0.1:8080/api/v1/event/qr/${eventId}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getAccessToken()}`,
-          },
-        }
-      );
-      const result = await res.json();
-      setQR(result.qr_code);
+      const res = await fetchWithAuth(`event/qr/${eventId}`);
+      setQR(res.qr_code);
       onOpen();
     } catch (error) {
       toast.error(
