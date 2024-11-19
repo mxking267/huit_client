@@ -12,7 +12,9 @@ const RegisterEvent = ({ eventId }: { eventId: string }) => {
     setIsLoading(true);
     toast.dismiss();
     try {
-      const res = await fetchWithAuth(`event/register/${eventId}`);
+      const res = await fetchWithAuth(`event/register/${eventId}`, {
+        method: 'PATCH',
+      });
       if (res) toast.success('success');
       else toast.error('error');
     } catch (error) {
