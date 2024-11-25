@@ -10,6 +10,7 @@ import fetchWithAuth from '@/components/hooks/fetchWithAuth';
 import CreateUser from '@/components/users/create-user';
 import { Suspense } from 'react';
 
+// Dynamic import cho bảng người dùng, chỉ chạy ở client
 const ClientOnlyUserTable = dynamic(() => import('@/components/users/table'), {
   ssr: false,
 });
@@ -21,6 +22,15 @@ const fetchUsers = async (page: number, keyword: string = '') => {
 };
 
 export default function UserPage() {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <UserPageContent />
+    </Suspense>
+  );
+}
+
+// Component chính bên trong Suspense
+function UserPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -42,30 +52,28 @@ export default function UserPage() {
   };
 
   return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <div className='flex flex-col gap-4'>
-        <h1 className={title({ className: 'mb-4' })}>Người dùng</h1>
-        <div className='flex justify-between gap-4'>
-          <Search onSearch={handleSearch} />
-          <CreateUser />
-        </div>
-        {isLoading && <p>Đang tải...</p>}
-        {isError && <p>Có lỗi xảy ra khi tải dữ liệu.</p>}
-        {!isLoading && !isError && (
-          <>
-            <ClientOnlyUserTable
-              users={data?.data || []}
-              type='USER'
-            />
-            <Pagination
-              total={data?.totalPages || 1}
-              initialPage={1}
-              page={currentPage}
-              onChange={handlePageChange}
-            />
-          </>
-        )}
+    <div className='flex flex-col gap-4'>
+      <h1 className={title({ className: 'mb-4' })}>Người dùng</h1>
+      <div className='flex justify-between gap-4'>
+        <Search onSearch={handleSearch} />
+        <CreateUser />
       </div>
-    </Suspense>
+      {isLoading && <p>Đang tải...</p>}
+      {isError && <p>Có lỗi xảy ra khi tải dữ liệu.</p>}
+      {!isLoading && !isError && (
+        <>
+          <ClientOnlyUserTable
+            users={data?.data || []}
+            type='USER'
+          />
+          <Pagination
+            total={data?.totalPages || 1}
+            initialPage={1}
+            page={currentPage}
+            onChange={handlePageChange}
+          />
+        </>
+      )}
+    </div>
   );
 }

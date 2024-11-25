@@ -5,12 +5,12 @@ import { useQuery } from '@tanstack/react-query'; // import useQuery từ react-
 import { title } from '@/components/primitives';
 import Search from '@/components/search';
 import { Pagination } from '@nextui-org/pagination';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { User } from '@/types/user';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import CreateManager from '@/components/managers/create-manager';
 import fetchWithAuth from '@/components/hooks/fetchWithAuth';
-import { Suspense } from 'react';
 
+// Dynamic import cho bảng người dùng, chỉ chạy ở client
 const ClientOnlyUserTable = dynamic(() => import('@/components/users/table'), {
   ssr: false,
 });
@@ -24,6 +24,15 @@ const fetchManagers = async (page: number, searchQuery: string = '') => {
 };
 
 export default function ManagerPage() {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <ManagerPageContent />
+    </Suspense>
+  );
+}
+
+// Component chính bên trong Suspense
+function ManagerPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -51,24 +60,22 @@ export default function ManagerPage() {
   if (error) return <div>Error fetching data</div>;
 
   return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <div className='flex flex-col gap-4'>
-        <h1 className={title({ className: 'mb-4' })}>Quản trị viên</h1>
-        <div className='flex justify-between gap-4'>
-          <Search onSearch={handleSearch} />
-          <CreateManager />
-        </div>
-        <ClientOnlyUserTable
-          users={data.data}
-          type='MANAGER'
-        />
-        <Pagination
-          total={data.totalPages}
-          initialPage={1}
-          page={data.currentPage}
-          onChange={handlePageChange}
-        />
+    <div className='flex flex-col gap-4'>
+      <h1 className={title({ className: 'mb-4' })}>Quản trị viên</h1>
+      <div className='flex justify-between gap-4'>
+        <Search onSearch={handleSearch} />
+        <CreateManager />
       </div>
-    </Suspense>
+      <ClientOnlyUserTable
+        users={data.data}
+        type='MANAGER'
+      />
+      <Pagination
+        total={data.totalPages}
+        initialPage={1}
+        page={data.currentPage}
+        onChange={handlePageChange}
+      />
+    </div>
   );
 }
