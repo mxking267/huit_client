@@ -54,7 +54,7 @@ export default function FacultyPage() {
 
   return (
     <div className='flex flex-col gap-4 w-full'>
-      <h1 className={title()}>Faculties</h1>
+      <h1 className={title()}>Khoa</h1>
       <div className='flex justify-between gap-4'>
         <SearchFaculty onSearch={handleSearch} />
         <CreateFaculty />

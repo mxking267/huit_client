@@ -63,7 +63,7 @@ export default function LocationTable({ data }: Props) {
             </div>
           );
         default:
-          return cellValue;
+          return <div className='min-w-[200px]'>{cellValue}</div>;
       }
     },
     []

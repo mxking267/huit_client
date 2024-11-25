@@ -75,8 +75,7 @@ export default function EventRegisteredPage() {
 
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 w-full'>
         {data.map((event) => {
-          const canGetQR =
-            new Date(event.date).getTime() >= new Date().getTime();
+          const canGetQR = true;
           return (
             <Card
               key={event._id}
@@ -92,7 +91,9 @@ export default function EventRegisteredPage() {
                 removeWrapper
                 alt='Relaxing app background'
                 className='z-0 w-full h-full object-cover'
-                src='https://nextui.org/images/card-example-5.jpeg'
+                src={
+                  event.image || 'https://nextui.org/images/card-example-5.jpeg'
+                }
               />
 
               <CardFooter className='absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100'>
@@ -104,7 +105,12 @@ export default function EventRegisteredPage() {
                     <span>{getAttendance(event.attendanceStatus).status}</span>
                   </Chip>
                   <div className='flex flex-col'>
-                    <p className='text-tiny text-white/60'>{`${format(event.date ? new Date(event.date).toDateString() : new Date(), 'dd/MM/yyyy')}`}</p>
+                    <p className='text-tiny text-white/60'>{`${format(
+                      event.date
+                        ? new Date(event.date).toDateString()
+                        : new Date(),
+                      'dd/MM/yyyy'
+                    )}`}</p>
                   </div>
                 </div>
                 {event.status !== EEventStatus.FINISHED &&

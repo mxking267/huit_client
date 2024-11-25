@@ -38,6 +38,11 @@ const GetQR = ({ eventId }: { eventId: string }) => {
     }
   };
 
+  const shareViaZalo = (shareText: string, imageUrl: string) => {
+    const shareUrl = `https://zalo.me/share?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(imageUrl)}`;
+    window.open(shareUrl, '_blank');
+  };
+
   return (
     <>
       <Button
@@ -83,6 +88,16 @@ const GetQR = ({ eventId }: { eventId: string }) => {
                           url={qrCode.qr_code_cko}
                           name='qr-check-out'
                         />
+                        <Button
+                          onPress={() =>
+                            shareViaZalo(
+                              'Hãy xem hình ảnh này nhé!',
+                              'https://github.com/shadcn.png'
+                            )
+                          }
+                        >
+                          Gửi qua zalo
+                        </Button>
                       </div>
                     </div>
                   ) : (

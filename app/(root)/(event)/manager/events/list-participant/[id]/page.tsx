@@ -10,8 +10,6 @@ import ParticipantTable from '@/components/events/table-list-attendance';
 import Search from '@/components/search';
 import { Button } from '@nextui-org/button';
 import { exportToExcel } from '@/components/utils/export-excel';
-import AddStudentModal from '@/components/events/add-participant';
-import { useDisclosure } from '@nextui-org/modal';
 import { User } from '@/types/user';
 
 const fetchParticipants = async (id: string, searchQuery: string = '') => {
@@ -34,7 +32,6 @@ const addParticipant = async (
 };
 
 export default function ListParticipantPage() {
-  const [isModalOpen, setModalOpen] = useState(false);
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
@@ -90,17 +87,6 @@ export default function ListParticipantPage() {
           >
             Xuất danh sách
           </Button>
-          <Button
-            color='success'
-            onPress={() => setModalOpen(true)}
-          >
-            Thêm người tham gia
-          </Button>
-          <AddStudentModal
-            isOpen={isModalOpen}
-            onAddToList={handleAddParticipant}
-            onClose={() => setModalOpen(false)}
-          />
         </div>
       </div>
       <div>

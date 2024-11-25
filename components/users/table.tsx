@@ -12,13 +12,10 @@ import { User } from '@/types/user';
 
 import React from 'react';
 import { Tooltip } from '@nextui-org/tooltip';
-import { EditIcon, EyeIcon, DeleteIcon } from '../icons';
+import UpdateUser from './update-user';
+import UpdateManager from '../managers/update-manager';
 
 const columns = [
-  {
-    key: 'student_code',
-    label: 'MSSV',
-  },
   {
     key: 'full_name',
     label: 'Họ tên',
@@ -28,10 +25,6 @@ const columns = [
     label: 'Email',
   },
   {
-    key: 'class',
-    label: 'Lớp',
-  },
-  {
     key: 'actions',
     label: 'Hành động',
   },
@@ -39,9 +32,10 @@ const columns = [
 
 interface Props {
   users: User[];
+  type: 'USER' | 'MANAGER';
 }
 
-export default function UserTable({ users }: Props) {
+export default function UserTable({ users, type }: Props) {
   const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
     const cellValue = user[columnKey as keyof User];
 
@@ -49,22 +43,13 @@ export default function UserTable({ users }: Props) {
       case 'actions':
         return (
           <div className='relative flex items-center gap-2'>
-            <Tooltip content='Details'>
+            <Tooltip content='Cập nhật'>
               <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
-                <EyeIcon />
-              </span>
-            </Tooltip>
-            <Tooltip content='Edit user'>
-              <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
-                <EditIcon />
-              </span>
-            </Tooltip>
-            <Tooltip
-              color='danger'
-              content='Delete user'
-            >
-              <span className='text-lg text-danger cursor-pointer active:opacity-50'>
-                <DeleteIcon />
+                {type === 'USER' ? (
+                  <UpdateUser user={user} />
+                ) : (
+                  <UpdateManager manager={user} />
+                )}
               </span>
             </Tooltip>
           </div>

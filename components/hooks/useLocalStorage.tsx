@@ -1,5 +1,3 @@
-import { useState, useEffect } from 'react';
-
 function getStorageValue(key: string, defaultValue = ''): string {
   // getting stored value
   if (typeof window !== 'undefined') {
@@ -12,18 +10,10 @@ function getStorageValue(key: string, defaultValue = ''): string {
 export const useLocalStorage = (
   key: string,
   defaultValue = ''
-): [string, (value: string) => void] => {
-  const [value, setValue] = useState<string>(() => {
-    return getStorageValue(key, defaultValue);
-  });
-  useEffect(() => {
-    if (!value) {
-      localStorage.removeItem(key);
-      return;
-    }
-    // storing input name
-    localStorage.setItem(key, value);
-  }, [key, value]);
+): [string, (value: string) => void, () => void] => {
+  const value = getStorageValue(key, defaultValue);
+  const setValue = (value: string) => localStorage.setItem(key, value);
+  const removeValue = () => localStorage.removeItem(key);
 
-  return [value, setValue];
+  return [value, setValue, removeValue];
 };

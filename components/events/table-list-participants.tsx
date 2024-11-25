@@ -8,9 +8,11 @@ import {
 } from '@nextui-org/table';
 
 import React, { useEffect, useState } from 'react';
-import { EventParticipant } from '@/types/event';
+import { EEventStatus, EventParticipant, getAttendance } from '@/types/event';
 import fetchWithAuth from '../hooks/fetchWithAuth';
 import Search from '../search';
+import { Button } from '@nextui-org/button';
+import { useQuery } from '@tanstack/react-query';
 
 const columns = [
   {
@@ -35,22 +37,25 @@ interface Props {
   eventId: string;
 }
 
+// Fetch function to get participant data with search query
+const fetchData = async (searchQuery: string = '', eventId: string) => {
+  const res = await fetchWithAuth(
+    `/event/listParticipant/${eventId}?keyword=${searchQuery}`
+  );
+  return res;
+};
+
 export default function ParticipantTable({ eventId }: Props) {
-  const [data, setData] = useState<EventParticipant[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const fetchData = async (searchQuery: string = '') => {
-    const res = await fetchWithAuth(
-      `/event/listParticipant/${eventId}?keyword=${searchQuery}`
-    );
-    setData(res);
-  };
-
-  useEffect(() => {
-    fetchData('');
-  }, []);
+  const { data } = useQuery<EventParticipant[]>({
+    queryKey: ['attendance', eventId, searchQuery],
+    queryFn: () => fetchData(searchQuery, eventId),
+    keepPreviousData: true,
+  });
 
   const handleSearch = (query: string) => {
-    fetchData(query);
+    setSearchQuery(query);
   };
 
   const renderCell = React.useCallback(
@@ -58,8 +63,8 @@ export default function ParticipantTable({ eventId }: Props) {
       const cellValue = eventParticipant[columnKey as keyof EventParticipant];
 
       switch (columnKey) {
-        case 'actions':
-          return <span>Check in/ check out</span>;
+        case 'status':
+          return getAttendance(cellValue as EEventStatus).status;
         default:
           return cellValue;
       }
@@ -76,7 +81,7 @@ export default function ParticipantTable({ eventId }: Props) {
             <TableColumn key={column.key}>{column.label}</TableColumn>
           )}
         </TableHeader>
-        <TableBody items={data}>
+        <TableBody items={data || []}>
           {(item) => (
             <TableRow key={item._id}>
               {(columnKey) => (

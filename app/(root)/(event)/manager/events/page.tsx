@@ -101,7 +101,7 @@ const EventPage = () => {
               <div className='self-end'>
                 <EventManagerAction eventId={event._id} />
               </div>
-              <p className='uppercase font-bold text-left text-md'>
+              <p className='uppercase font-bold text-left text-md line-clamp-2'>
                 {event.name}
               </p>
               <small className='text-default-500'>

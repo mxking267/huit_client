@@ -67,7 +67,7 @@ export default function EventPage() {
         <Search onSearch={handleSearch} />
       </div>
 
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 w-full'>
+      <div className='grid grid-cols-1 lg:grid-cols-4 gap-4 p-4 w-full'>
         {data.map((event) => {
           const canGetQR =
             event.status !== EEventStatus.STOPPED && EEventStatus.FINISHED;
@@ -78,7 +78,7 @@ export default function EventPage() {
               className='w-full'
             >
               <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
-                <p className='uppercase font-bold text-left text-md'>
+                <p className='uppercase font-bold text-left text-md line-clamp-2'>
                   {event.name}
                 </p>
                 <small className='text-default-500'>

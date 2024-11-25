@@ -47,7 +47,7 @@ const CreateFaculty = () => {
         onPress={onOpen}
         color='primary'
       >
-        Create
+        Tạo mới
       </Button>
       <Modal
         isOpen={isOpen}

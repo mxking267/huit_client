@@ -59,7 +59,7 @@ export default function EventDetailPage() {
           </small>
           <div dangerouslySetInnerHTML={{ __html: formattedContent }} />
           <span className='text-default-500'>
-            Bonus point:{' '}
+            Điểm rèn luyện:{' '}
             <span className='text-foreground'>{data.bonus_points}</span>
           </span>
         </CardHeader>

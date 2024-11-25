@@ -10,5 +10,7 @@ export type User = {
   email: string;
   role: ERole;
   student_code: string;
-  class: string;
+  class_name: string;
+  faculty_id: string;
+  course_id: string;
 };

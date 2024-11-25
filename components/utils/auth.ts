@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 export const useAuth = () => {
   const queryClient = useQueryClient();
-  const [value, setValue] = useLocalStorage('access_token');
+  const [value, setValue, removeValue] = useLocalStorage('access_token');
   const router = useRouter();
 
   const isTokenExpired = useCallback((token: string): boolean => {
@@ -28,16 +28,15 @@ export const useAuth = () => {
   };
 
   const logout = () => {
-    setValue('');
-    queryClient.invalidateQueries(['user-me']);
+    removeValue();
     router.push('/login');
+    queryClient.invalidateQueries(['user-me']);
   };
 
-  const token = value;
-
-  if (token && !isTokenExpired(token)) {
+  if (value && !isTokenExpired(value)) {
+    console.log(value);
     try {
-      const decoded: any = jwtDecode(token);
+      const decoded: any = jwtDecode(value);
       return { auth: true, userRole: decoded.role, logout, login };
     } catch (error) {
       console.error('Invalid token', error);

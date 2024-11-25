@@ -11,36 +11,20 @@ import { Input } from '@nextui-org/input';
 import { FormEvent, useState } from 'react';
 import { toast } from 'react-toastify';
 import fetchWithAuth from '../hooks/fetchWithAuth';
-import { Select, SelectItem } from '@nextui-org/select';
 import { getAccessToken } from '../utils/getAccessToken';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Faculty } from '@/types/faculty';
-import { Course } from '@/types/course';
 
-const fetchFaculty = async () => {
-  const [faculties, courses] = await Promise.all([
-    fetchWithAuth(`faculty/all`),
-    fetchWithAuth(`course/all`),
-  ]);
-  return { faculties, courses };
-};
-
-const CreateUser = () => {
+const CreateManager = () => {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const queryClient = useQueryClient();
-  const { data, isLoading: isFetching } = useQuery(['faculties'], fetchFaculty);
 
-  const createUser = async (formData: FormData) => {
+  const createManager = async (formData: FormData) => {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
-    const student_code = formData.get('student_code') as string;
-    const class_name = formData.get('class_name') as string;
     const full_name = formData.get('full_name') as string;
-    const faculty_id = formData.get('faculty_id') as string;
-    const course_id = formData.get('course_id') as string;
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const response = await fetch(`${apiUrl}/user`, {
+    const response = await fetch(`${apiUrl}/user/manager`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -49,11 +33,7 @@ const CreateUser = () => {
       body: JSON.stringify({
         email,
         password,
-        student_code,
-        class_name,
         full_name,
-        faculty_id,
-        course_id,
       }),
     });
 
@@ -82,13 +62,13 @@ const CreateUser = () => {
     return response.json();
   };
 
-  const mutation = useMutation(createUser, {
+  const mutation = useMutation(createManager, {
     onSuccess: () => {
       toast.success('Tạo người dùng thành công!');
       setIsLoading(false);
 
       onClose();
-      queryClient.invalidateQueries(['users']);
+      queryClient.invalidateQueries(['managers']);
     },
     onError: (error: any) => {
       const errorMessage =
@@ -114,12 +94,6 @@ const CreateUser = () => {
     mutation.mutate(formData);
   }
 
-  if (isFetching) {
-    return <p>Loading...</p>;
-  }
-
-  const { faculties = [], courses = [] } = data || {};
-
   return (
     <>
       <Button
@@ -141,15 +115,9 @@ const CreateUser = () => {
             {(onClose) => (
               <>
                 <ModalHeader className='flex flex-col gap-1'>
-                  Tạo người dùng
+                  Tạo người quản trị
                 </ModalHeader>
                 <ModalBody>
-                  <Input
-                    label='Mã sinh viên'
-                    name='student_code'
-                    variant='bordered'
-                    isRequired
-                  />
                   <Input
                     label='Họ và tên'
                     name='full_name'
@@ -168,42 +136,6 @@ const CreateUser = () => {
                     variant='bordered'
                     isRequired
                   />
-                  <Input
-                    label='Lớp'
-                    name='class_name'
-                    variant='bordered'
-                    isRequired
-                  />
-                  <Select
-                    label='Khoa'
-                    name='faculty_id'
-                    variant='bordered'
-                    isRequired
-                  >
-                    {faculties.map((item: Faculty) => (
-                      <SelectItem
-                        value={item._id}
-                        key={item._id}
-                      >
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                  </Select>
-                  <Select
-                    label='Khoá'
-                    name='course_id'
-                    variant='bordered'
-                    isRequired
-                  >
-                    {courses.map((item: Course) => (
-                      <SelectItem
-                        value={item._id}
-                        key={item._id}
-                      >
-                        {item.courseName}
-                      </SelectItem>
-                    ))}
-                  </Select>
                 </ModalBody>
                 <ModalFooter>
                   <Button
@@ -230,4 +162,4 @@ const CreateUser = () => {
   );
 };
 
-export default CreateUser;
+export default CreateManager;
