@@ -56,7 +56,7 @@ export default function ManagerPage() {
         <Search onSearch={handleSearch} />
         <CreateManager />
       </div>
-      <ClientOnlyUserTable users={data.data} />
+      <ClientOnlyUserTable users={data.data} type='MANAGER' />
       <Pagination
         total={data.totalPages}
         initialPage={1}
