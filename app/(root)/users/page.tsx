@@ -8,6 +8,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import fetchWithAuth from '@/components/hooks/fetchWithAuth';
 import CreateUser from '@/components/users/create-user';
+import { Suspense } from 'react';
 
 const ClientOnlyUserTable = dynamic(() => import('@/components/users/table'), {
   ssr: false,
@@ -41,28 +42,30 @@ export default function UserPage() {
   };
 
   return (
-    <div className='flex flex-col gap-4'>
-      <h1 className={title({ className: 'mb-4' })}>Người dùng</h1>
-      <div className='flex justify-between gap-4'>
-        <Search onSearch={handleSearch} />
-        <CreateUser />
+    <Suspense fallback={<p>Loading...</p>}>
+      <div className='flex flex-col gap-4'>
+        <h1 className={title({ className: 'mb-4' })}>Người dùng</h1>
+        <div className='flex justify-between gap-4'>
+          <Search onSearch={handleSearch} />
+          <CreateUser />
+        </div>
+        {isLoading && <p>Đang tải...</p>}
+        {isError && <p>Có lỗi xảy ra khi tải dữ liệu.</p>}
+        {!isLoading && !isError && (
+          <>
+            <ClientOnlyUserTable
+              users={data?.data || []}
+              type='USER'
+            />
+            <Pagination
+              total={data?.totalPages || 1}
+              initialPage={1}
+              page={currentPage}
+              onChange={handlePageChange}
+            />
+          </>
+        )}
       </div>
-      {isLoading && <p>Đang tải...</p>}
-      {isError && <p>Có lỗi xảy ra khi tải dữ liệu.</p>}
-      {!isLoading && !isError && (
-        <>
-          <ClientOnlyUserTable
-            users={data?.data || []}
-            type='USER'
-          />
-          <Pagination
-            total={data?.totalPages || 1}
-            initialPage={1}
-            page={currentPage}
-            onChange={handlePageChange}
-          />
-        </>
-      )}
-    </div>
+    </Suspense>
   );
 }
