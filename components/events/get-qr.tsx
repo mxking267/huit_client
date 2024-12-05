@@ -3,7 +3,6 @@
 import { Button } from '@nextui-org/button';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { getAccessToken } from '../utils/getAccessToken';
 import {
   Modal,
   ModalBody,
@@ -36,11 +35,6 @@ const GetQR = ({ eventId }: { eventId: string }) => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const shareViaZalo = (shareText: string, imageUrl: string) => {
-    const shareUrl = `https://zalo.me/share?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(imageUrl)}`;
-    window.open(shareUrl, '_blank');
   };
 
   return (
@@ -88,16 +82,6 @@ const GetQR = ({ eventId }: { eventId: string }) => {
                           url={qrCode.qr_code_cko}
                           name='qr-check-out'
                         />
-                        <Button
-                          onPress={() =>
-                            shareViaZalo(
-                              'Hãy xem hình ảnh này nhé!',
-                              'https://github.com/shadcn.png'
-                            )
-                          }
-                        >
-                          Gửi qua zalo
-                        </Button>
                       </div>
                     </div>
                   ) : (

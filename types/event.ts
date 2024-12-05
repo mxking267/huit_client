@@ -1,8 +1,7 @@
-export enum EEventStatus {
-  INITIAL = 'INITIAL',
-  HAPPENING = 'HAPPENING',
-  FINISHED = 'FINISHED',
-  STOPPED = 'STOPPED',
+export enum EEventType {
+  SCIENTIFIC_RESEARCH = 'SCIENTIFIC_RESEARCH',
+  MOVEMENT = 'MOVEMENT',
+  SEMINAR = 'SEMINAR',
 }
 
 export enum EAttendanceStatus {
@@ -17,14 +16,17 @@ export type Event = {
   name: string;
   description: string;
   location_id: string;
-  faculty_id: string;
+  faculty_id: {
+    _id: string;
+    name: string;
+  };
   date: string;
   participants: Participant[];
   manager_id: string;
   createdAt: string;
   updatedAt: string;
   bonus_points: number;
-  status: EEventStatus;
+  type: EEventType;
   image: string;
 };
 
@@ -63,21 +65,11 @@ export const getAttendance = (attendanceStatus: string): AttendanceStatus => {
   return { status: 'None', color: 'default' };
 };
 
-export type EventStatusTrans = {
-  status: string;
-  color: 'warning' | 'primary' | 'success' | 'default' | 'danger';
-};
-
-export const getEventStatusTrans = (status: EEventStatus): EventStatusTrans => {
-  console.log(status);
-  const uppercaseStatus = status.toUpperCase();
-  if (uppercaseStatus === EEventStatus.INITIAL)
-    return { status: 'Mới', color: 'primary' };
-  if (uppercaseStatus === EEventStatus.HAPPENING)
-    return { status: 'Đang diễn ra', color: 'warning' };
-  if (uppercaseStatus === EEventStatus.FINISHED)
-    return { status: 'Đã xong', color: 'success' };
-  if (uppercaseStatus === EEventStatus.STOPPED)
-    return { status: 'Đã dừng lại', color: 'danger' };
-  return { status: 'None', color: 'default' };
+export const getEventStatusTrans = (type: EEventType): string => {
+  const uppercaseStatus = type ? type.toUpperCase() : '';
+  if (uppercaseStatus === EEventType.MOVEMENT) return 'Phong trào';
+  if (uppercaseStatus === EEventType.SCIENTIFIC_RESEARCH)
+    return 'Nghiên cứu khoa học';
+  if (uppercaseStatus === EEventType.SEMINAR) return 'Hội thảo';
+  return type;
 };

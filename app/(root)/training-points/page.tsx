@@ -4,14 +4,8 @@ import { title } from '@/components/primitives';
 import { Card, CardFooter, CardHeader } from '@nextui-org/card';
 import { useEffect, useState } from 'react';
 import { Image } from '@nextui-org/image';
-import {
-  EAttendanceStatus,
-  EEventStatus,
-  Event,
-  getAttendance,
-} from '@/types/event';
+import { EAttendanceStatus, Event, getAttendance } from '@/types/event';
 import { Chip } from '@nextui-org/chip';
-import GetQR from '@/components/events/get-qr';
 import { format } from 'date-fns';
 import fetchWithAuth from '@/components/hooks/fetchWithAuth';
 import useGetMe from '@/components/hooks/useGetProfile';
@@ -62,7 +56,7 @@ export default function EventRegisteredPage() {
             <div key={semesterItem.semester}>
               <h4 className='w-max'>Kì: {semesterItem.semester}</h4>
               <h6 className='w-max'>
-                Tổng điểm cộng: {semesterItem.totalPoints}
+                Tổng điểm rèn luyện được cộng: {semesterItem.totalPoints}
               </h6>
               <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 w-full'>
                 {events.map((event) => {
@@ -81,7 +75,10 @@ export default function EventRegisteredPage() {
                         removeWrapper
                         alt='Relaxing app background'
                         className='z-0 w-full h-full object-cover'
-                        src='https://nextui.org/images/card-example-5.jpeg'
+                        src={
+                          event.image ||
+                          'https://nextui.org/images/card-example-5.jpeg'
+                        }
                       />
 
                       <CardFooter className='absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100'>

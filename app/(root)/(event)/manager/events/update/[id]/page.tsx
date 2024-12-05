@@ -8,19 +8,13 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@nextui-org/button';
 import { Input, Textarea } from '@nextui-org/input';
 import { DatePicker } from '@nextui-org/date-picker';
-import {
-  now,
-  getLocalTimeZone,
-  DateValue,
-  parseAbsoluteToLocal,
-} from '@internationalized/date';
+import { parseAbsoluteToLocal } from '@internationalized/date';
 import { Select, SelectItem } from '@nextui-org/select';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAccessToken } from '@/components/utils/getAccessToken';
 import { Location } from '@/types/location';
 import { Faculty } from '@/types/faculty';
-import { Event } from '@/types/event';
-import { ZonedDateTime } from '@internationalized/date';
+import { EEventType, Event } from '@/types/event';
 
 type FetchData = {
   events: Event;
@@ -168,9 +162,8 @@ export default function UpdateEventPage() {
       <Card className='py-4 w-full grid grid-cols-2'>
         <CardHeader className='pb-0 pt-2 px-4 gap-2 flex-col'>
           <Input
-            label='Name'
+            label='Tên sự kiện'
             name='name'
-            placeholder="Enter event's name"
             variant='flat'
             isRequired
             defaultValue={events.name}
@@ -180,14 +173,13 @@ export default function UpdateEventPage() {
             <DatePicker
               hideTimeZone
               defaultValue={parseAbsoluteToLocal(events.date)}
-              label='Event Date'
+              label='Ngày diễn ra'
               name='date'
               variant='flat'
             />
             <Input
-              label='Bonus point'
+              label='Điểm rèn luyện'
               name='bonus_points'
-              placeholder="Enter event's bonus point"
               variant='flat'
               type='number'
               isRequired
@@ -195,7 +187,7 @@ export default function UpdateEventPage() {
             />
           </div>
           <Select
-            label='Select location'
+            label='Địa điểm'
             name='location_id'
             isRequired
             defaultSelectedKeys={[events.location_id]}
@@ -210,9 +202,27 @@ export default function UpdateEventPage() {
             ))}
           </Select>
           <Select
-            label='Select faculty'
+            label='Loại sự kiện'
+            name='type'
+            isRequired
+            defaultSelectedKeys={events.type ? [events.type] : []}
+          >
+            {Object.values(EEventType).map((type) => (
+              <SelectItem
+                value={type}
+                key={type}
+              >
+                {type}
+              </SelectItem>
+            ))}
+          </Select>
+          <Select
+            label='Khoa'
             name='faculty_id'
-            defaultSelectedKeys={[events.faculty_id]}
+            description='Bỏ qua nếu là sự kiện toàn trường'
+            defaultSelectedKeys={
+              events.faculty_id ? [events.faculty_id._id] : []
+            }
           >
             {faculties.map((item) => (
               <SelectItem
@@ -224,7 +234,7 @@ export default function UpdateEventPage() {
             ))}
           </Select>
           <Textarea
-            label='Description'
+            label='Mô tả'
             name='description'
             variant='flat'
             defaultValue={events.description}

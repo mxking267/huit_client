@@ -3,7 +3,7 @@
 import { Card, CardBody, CardFooter, CardHeader } from '@nextui-org/card';
 import { useEffect, useState } from 'react';
 import { Image } from '@nextui-org/image';
-import { EEventStatus, Event } from '@/types/event';
+import { EEventType, Event, getEventStatusTrans } from '@/types/event';
 import { Chip } from '@nextui-org/chip';
 import RegisterEvent from '@/components/events/register-event';
 import { format } from 'date-fns';
@@ -14,49 +14,100 @@ import { useParams, useRouter } from 'next/navigation';
 import Search from '@/components/search';
 import { Link } from '@nextui-org/link';
 import { Button } from '@nextui-org/button';
+import { Select, SelectItem } from '@nextui-org/select';
+import React from 'react';
+import { Selection } from '@nextui-org/table';
+import { useQuery } from '@tanstack/react-query';
+
+type Response = { data: Array<Event & { isRegistered: boolean }> } & Page;
+
+const fetchEvents = async (
+  page: number,
+  searchQuery: string = '',
+  type: string | null,
+  status: string,
+  faculty: string | null
+) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    keyword: searchQuery,
+    status,
+    ...(type && type !== 'Tất cả' ? { type } : {}),
+    ...(faculty ? { faculty_id: faculty } : {}),
+  });
+
+  const response = await fetchWithAuth(`event?${params.toString()}`);
+  return response;
+};
 
 export default function EventPage() {
   const params = useParams();
   const router = useRouter();
-
-  const currentPage = Number(params.page) || 1;
-  const [data, setData] = useState<Array<Event & { isRegistered: boolean }>>(
-    []
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(Number(params.page) || 1);
+  const [typeFilter, setTypeFilter] = React.useState<Selection>(new Set([]));
+  const [statusFilter, setStatusFilter] = React.useState<Selection>(
+    new Set([])
+  );
+  const [facultyFilter, setFacultyFilter] = React.useState<Selection>(
+    new Set([])
   );
   const [pages, setPages] = useState<Page>({
     currentPage,
     totalPages: 1,
   });
 
-  const fetchData = async (page: number, searchQuery: string = '') => {
-    try {
-      const res = await fetchWithAuth(
-        `event?page=${page}&keyword=${searchQuery}`
-      );
-
-      setData(res.data);
-      setPages({
-        currentPage: res.currentPage,
-        totalPages: res.totalPages,
-      });
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
+  const { data, refetch } = useQuery<Response>({
+    queryKey: [
+      'event-manager',
+      currentPage,
+      searchQuery,
+      typeFilter,
+      statusFilter,
+      facultyFilter,
+    ],
+    queryFn: () =>
+      fetchEvents(
+        currentPage,
+        searchQuery,
+        Array.from(typeFilter).join(','),
+        Array.from(statusFilter).join(','),
+        Array.from(facultyFilter).join(',')
+      ),
+    keepPreviousData: true,
+  });
 
   useEffect(() => {
-    fetchData(currentPage);
-  }, [currentPage]);
+    if (params.page) {
+      const page = Number(params.page);
+      setCurrentPage(page); // Update currentPage when params.page changes
+      refetch();
+    }
+  }, [params.page]);
+
+  useEffect(() => {
+    if (data) {
+      setPages({
+        currentPage: data.currentPage,
+        totalPages: data.totalPages,
+      });
+    }
+  }, [data]);
 
   const handlePageChange = (page: number) => {
-    router.push(`/user/events?page=${page}`);
-    fetchData(page);
+    setCurrentPage(page); // Cập nhật currentPage
+    router.push(`/user/events?page=${page}`); // Điều hướng đến trang mới
   };
 
   const handleSearch = (query: string) => {
+    setSearchQuery(query);
     router.push(`/user/events?page=1&search=${query}`); // Điều hướng đến trang 1 với kết quả tìm kiếm
-    fetchData(1, query);
   };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (!data) return <div>Bạn đã vượt thời gian học tại trường</div>;
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex justify-between'>
@@ -65,12 +116,72 @@ export default function EventPage() {
 
       <div className='flex justify-between gap-4'>
         <Search onSearch={handleSearch} />
+        <Select
+          label='Loại sự kiện'
+          selectedKeys={typeFilter}
+          onSelectionChange={setTypeFilter}
+          className={'w-full max-w-none'}
+        >
+          {['Tất cả', ...Object.values(EEventType).map((type) => type)].map(
+            (type) => (
+              <SelectItem
+                key={type}
+                value={type}
+              >
+                {getEventStatusTrans(type as EEventType)}
+              </SelectItem>
+            )
+          )}
+        </Select>
+
+        <Select
+          label='Trạng thái'
+          selectedKeys={statusFilter}
+          onSelectionChange={setStatusFilter}
+        >
+          <SelectItem
+            key='all'
+            value='all'
+          >
+            Tất cả
+          </SelectItem>
+          <SelectItem
+            key='upcoming'
+            value='upcoming'
+          >
+            Sắp diễn ra
+          </SelectItem>
+          <SelectItem
+            key='past'
+            value='past'
+          >
+            Đã diễn ra
+          </SelectItem>
+        </Select>
+        <Select
+          label='Khoa'
+          name='faculty_id'
+          defaultSelectedKeys={facultyFilter}
+          onSelectionChange={setFacultyFilter}
+        >
+          {[
+            { _id: '', name: 'Tất cả' },
+            { _id: 'all', name: 'Toàn trường' },
+            { _id: 'faculty', name: 'Sự kiện của khoa' },
+          ].map((item) => (
+            <SelectItem
+              value={item._id}
+              key={item._id}
+            >
+              {item.name}
+            </SelectItem>
+          ))}
+        </Select>
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-4 gap-4 p-4 w-full'>
-        {data.map((event) => {
-          const canGetQR =
-            event.status !== EEventStatus.STOPPED && EEventStatus.FINISHED;
+        {data?.data.map((event) => {
+          const canGetQR = new Date(event.date).getTime() <= today.getTime();
           return (
             <Card
               key={event._id}
@@ -86,6 +197,11 @@ export default function EventPage() {
                     event.date ? new Date(event.date) : new Date('1970-01-01'),
                     'dd/MM/yyyy'
                   )}
+                  {' - '}
+                  {getEventStatusTrans(event.type)}
+                </small>
+                <small className='text-default-500'>
+                  {event.faculty_id ? null : 'Toàn trường'}
                 </small>
               </CardHeader>
               <CardBody className='overflow-visible py-2 items-end justify-end'>

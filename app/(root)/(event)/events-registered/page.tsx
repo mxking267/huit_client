@@ -4,7 +4,7 @@ import { title } from '@/components/primitives';
 import { Card, CardFooter, CardHeader } from '@nextui-org/card';
 import { useEffect, useState } from 'react';
 import { Image } from '@nextui-org/image';
-import { EEventStatus, Event, getAttendance } from '@/types/event';
+import { Event, getAttendance } from '@/types/event';
 import { Chip } from '@nextui-org/chip';
 import GetQR from '@/components/events/get-qr';
 import { format } from 'date-fns';
@@ -63,6 +63,9 @@ export default function EventRegisteredPage() {
 
   if (loading) return <div>Loading...</div>;
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex justify-between'>
@@ -75,7 +78,7 @@ export default function EventRegisteredPage() {
 
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 w-full'>
         {data.map((event) => {
-          const canGetQR = true;
+          const canGetQR = new Date(event.date).getTime() <= today.getTime();
           return (
             <Card
               key={event._id}
@@ -113,9 +116,7 @@ export default function EventRegisteredPage() {
                     )}`}</p>
                   </div>
                 </div>
-                {event.status !== EEventStatus.FINISHED &&
-                  event.status !== EEventStatus.STOPPED &&
-                  canGetQR && <GetQR eventId={event._id} />}
+                {canGetQR && <GetQR eventId={event._id} />}
               </CardFooter>
             </Card>
           );

@@ -15,6 +15,7 @@ import { getAccessToken } from '@/components/utils/getAccessToken';
 import fetchWithAuth from '@/components/hooks/fetchWithAuth';
 import { Location } from '@/types/location';
 import { Faculty } from '@/types/faculty';
+import { EEventType } from '@/types/event';
 
 const fetchLocationsAndFaculties = async () => {
   const [locations, faculties] = await Promise.all([
@@ -115,9 +116,8 @@ export default function CreateEventPage() {
       <Card className='py-4 w-full grid grid-cols-2'>
         <CardHeader className='pb-0 pt-2 px-4 gap-2 flex-col'>
           <Input
-            label='Name'
+            label='Tên sự kiện'
             name='name'
-            placeholder="Enter event's name"
             variant='flat'
             isRequired
           />
@@ -126,12 +126,12 @@ export default function CreateEventPage() {
             <DatePicker
               hideTimeZone
               defaultValue={now(getLocalTimeZone())}
-              label='Event Date'
+              label='Ngày diễn ra'
               name='date'
               variant='flat'
             />
             <Input
-              label='Bonus point'
+              label='Điểm rèn luyện'
               name='bonus_points'
               placeholder="Enter event's bonus point"
               variant='flat'
@@ -140,7 +140,7 @@ export default function CreateEventPage() {
             />
           </div>
           <Select
-            label='Select location'
+            label='Địa điểm'
             name='location_id'
             isRequired
           >
@@ -154,7 +154,22 @@ export default function CreateEventPage() {
             ))}
           </Select>
           <Select
-            label='Select faculty'
+            label='Loại sự kiện'
+            name='type'
+            isRequired
+          >
+            {Object.values(EEventType).map((type) => (
+              <SelectItem
+                value={type}
+                key={type}
+              >
+                {type}
+              </SelectItem>
+            ))}
+          </Select>
+          <Select
+            description='Bỏ qua nếu là sự kiện toàn trường'
+            label='Chọn khoa'
             name='faculty_id'
           >
             {faculties.map((item: Faculty) => (
@@ -166,6 +181,7 @@ export default function CreateEventPage() {
               </SelectItem>
             ))}
           </Select>
+
           <Textarea
             label='Description'
             name='description'

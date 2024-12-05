@@ -10,7 +10,7 @@ export const siteConfig = {
     },
     {
       href: '/training-points',
-      label: 'Lịch sử cộng điểm',
+      label: 'Lịch sử cộng điểm rèn luyện',
       roles: [ERole.USER],
     },
     {
