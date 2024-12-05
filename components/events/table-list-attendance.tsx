@@ -8,7 +8,11 @@ import {
 } from '@nextui-org/table';
 
 import React from 'react';
-import { EEventStatus, EventParticipant, getAttendance } from '@/types/event';
+import {
+  EAttendanceStatus,
+  EventParticipant,
+  getAttendance,
+} from '@/types/event';
 import { Button } from '@nextui-org/button';
 
 const columns = [
@@ -28,10 +32,6 @@ const columns = [
     key: 'status',
     label: 'Trạng thái',
   },
-  {
-    key: 'actions',
-    label: 'Hành động',
-  },
 ];
 
 interface Props {
@@ -44,15 +44,8 @@ export default function ParticipantTable({ data }: Props) {
       const cellValue = eventParticipant[columnKey as keyof EventParticipant];
 
       switch (columnKey) {
-        case 'actions':
-          return (
-            <div className='flex gap-2'>
-              <Button color='primary'>Check-in</Button>
-              <Button color='primary'>Check-out</Button>
-            </div>
-          );
         case 'status':
-          return getAttendance(cellValue as EEventStatus).status
+          return getAttendance(cellValue as EAttendanceStatus).status;
         default:
           return cellValue;
       }

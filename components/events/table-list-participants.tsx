@@ -8,7 +8,11 @@ import {
 } from '@nextui-org/table';
 
 import React, { useEffect, useState } from 'react';
-import { EEventStatus, EventParticipant, getAttendance } from '@/types/event';
+import {
+  EAttendanceStatus,
+  EventParticipant,
+  getAttendance,
+} from '@/types/event';
 import fetchWithAuth from '../hooks/fetchWithAuth';
 import Search from '../search';
 import { Button } from '@nextui-org/button';
@@ -64,7 +68,7 @@ export default function ParticipantTable({ eventId }: Props) {
 
       switch (columnKey) {
         case 'status':
-          return getAttendance(cellValue as EEventStatus).status;
+          return getAttendance(cellValue as EAttendanceStatus).status;
         default:
           return cellValue;
       }
