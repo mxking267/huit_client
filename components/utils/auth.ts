@@ -34,7 +34,6 @@ export const useAuth = () => {
   };
 
   if (value && !isTokenExpired(value)) {
-    console.log(value);
     try {
       const decoded: any = jwtDecode(value);
       return { auth: true, userRole: decoded.role, logout, login };

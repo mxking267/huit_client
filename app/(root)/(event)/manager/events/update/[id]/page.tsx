@@ -105,7 +105,7 @@ export default function UpdateEventPage() {
   });
 
   useEffect(() => {
-    if (data) setPreviewUrl(events.image);
+    if (data) setPreviewUrl(events?.image || '');
   }, [data]);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -144,15 +144,15 @@ export default function UpdateEventPage() {
     mutation.mutate({ formData, id });
   };
 
-  if (isFetching) {
-    return <p>Loading...</p>;
-  }
-
   const {
     events,
     locations = [],
     faculties = [],
-  } = data || { events: {} as Event, locations: [], faculties: [] };
+  } = data || { events: null, locations: [], faculties: [] };
+
+  if (isFetching || !events) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <form
@@ -166,13 +166,13 @@ export default function UpdateEventPage() {
             name='name'
             variant='flat'
             isRequired
-            defaultValue={events.name}
+            defaultValue={events?.name}
           />
 
           <div className='grid grid-cols-2 gap-2 w-full'>
             <DatePicker
               hideTimeZone
-              defaultValue={parseAbsoluteToLocal(events.date)}
+              defaultValue={parseAbsoluteToLocal(events?.date)}
               label='Ngày diễn ra'
               name='date'
               variant='flat'
@@ -183,14 +183,14 @@ export default function UpdateEventPage() {
               variant='flat'
               type='number'
               isRequired
-              defaultValue={events.bonus_points?.toString()}
+              defaultValue={events?.bonus_points?.toString()}
             />
           </div>
           <Select
             label='Địa điểm'
             name='location_id'
             isRequired
-            defaultSelectedKeys={[events.location_id]}
+            defaultSelectedKeys={[events?.location_id]}
           >
             {locations.map((item) => (
               <SelectItem
@@ -205,7 +205,7 @@ export default function UpdateEventPage() {
             label='Loại sự kiện'
             name='type'
             isRequired
-            defaultSelectedKeys={events.type ? [events.type] : []}
+            defaultSelectedKeys={events?.type ? [events?.type] : []}
           >
             {Object.values(EEventType).map((type) => (
               <SelectItem
@@ -221,7 +221,7 @@ export default function UpdateEventPage() {
             name='faculty_id'
             description='Bỏ qua nếu là sự kiện toàn trường'
             defaultSelectedKeys={
-              events.faculty_id ? [events.faculty_id._id] : []
+              events?.faculty_id ? [events?.faculty_id._id] : []
             }
           >
             {faculties.map((item) => (
@@ -237,7 +237,7 @@ export default function UpdateEventPage() {
             label='Mô tả'
             name='description'
             variant='flat'
-            defaultValue={events.description}
+            defaultValue={events?.description}
           />
         </CardHeader>
         <CardBody className='overflow-visible py-2'>

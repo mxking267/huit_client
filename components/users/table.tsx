@@ -17,8 +17,16 @@ import UpdateManager from '../managers/update-manager';
 
 const columns = [
   {
+    key: 'student_code',
+    label: 'MSSV',
+  },
+  {
     key: 'full_name',
     label: 'Họ tên',
+  },
+  {
+    key: 'class_name',
+    label: 'Lớp',
   },
   {
     key: 'email',

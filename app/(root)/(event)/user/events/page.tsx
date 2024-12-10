@@ -57,7 +57,7 @@ export default function EventPage() {
     totalPages: 1,
   });
 
-  const { data, refetch } = useQuery<Response>({
+  const { data, refetch, isLoading } = useQuery<Response>({
     queryKey: [
       'event-manager',
       currentPage,
@@ -107,7 +107,9 @@ export default function EventPage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  if (isLoading) return <div>Loading...</div>;
   if (!data) return <div>Bạn đã vượt thời gian học tại trường</div>;
+
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex justify-between'>
@@ -181,7 +183,7 @@ export default function EventPage() {
 
       <div className='grid grid-cols-1 lg:grid-cols-4 gap-4 p-4 w-full'>
         {data?.data.map((event) => {
-          const canGetQR = new Date(event.date).getTime() <= today.getTime();
+          const canGetQR = new Date(event.date).getTime() >= today.getTime();
           return (
             <Card
               key={event._id}

@@ -11,14 +11,13 @@ import isAuth from '@/components/hoc/isAuth';
 import { ERole } from '@/types/user';
 import { useQuery } from '@tanstack/react-query';
 import fetchWithAuth from '@/components/hooks/fetchWithAuth';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Page } from '@/types/page';
 import { useParams, useRouter } from 'next/navigation';
 import { Pagination } from '@nextui-org/pagination';
 import Search from '@/components/search';
 import { Select, SelectItem } from '@nextui-org/select';
 import { Selection } from '@nextui-org/table';
-import React from 'react';
 import { Faculty } from '@/types/faculty';
 import { getAccessToken } from '@/components/utils/getAccessToken';
 
@@ -78,7 +77,7 @@ const EventPage = () => {
   });
 
   const { data: facultyData, isLoading: isFetching } = useQuery<Faculty[]>(
-    ['events-locations-faculties'],
+    ['faculties-events'],
     () => fetchFaculties()
   );
 
@@ -130,6 +129,8 @@ const EventPage = () => {
   };
 
   const faculties = facultyData || [];
+
+  console.log(faculties);
 
   return (
     <div className='flex flex-col gap-4'>

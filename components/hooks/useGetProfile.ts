@@ -5,7 +5,6 @@ import fetchWithAuth from './fetchWithAuth';
 const useGetMe = () => {
   const fetchUser = async (): Promise<User> => {
     const data = await fetchWithAuth('auth/profile');
-    console.log(data);
     return data.user;
   };
 
