@@ -56,7 +56,7 @@ export default function CoursePage() {
 
   return (
     <div className='flex flex-col gap-4 w-full'>
-      <h1 className={title()}>Course</h1>
+      <h1 className={title()}>Khoá</h1>
       <div className='flex justify-between gap-4'>
         <Search onSearch={handleSearch} />
         <CreateCourse />

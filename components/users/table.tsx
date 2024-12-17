@@ -38,6 +38,21 @@ const columns = [
   },
 ];
 
+const managerColumns = [
+  {
+    key: 'full_name',
+    label: 'Họ tên',
+  },
+  {
+    key: 'email',
+    label: 'Email',
+  },
+  {
+    key: 'actions',
+    label: 'Hành động',
+  },
+];
+
 interface Props {
   users: User[];
   type: 'USER' | 'MANAGER';
@@ -69,7 +84,7 @@ export default function UserTable({ users, type }: Props) {
 
   return (
     <Table aria-label='Example table with dynamic content'>
-      <TableHeader columns={columns}>
+      <TableHeader columns={type === 'USER' ? columns : managerColumns}>
         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
       </TableHeader>
       <TableBody items={users}>
